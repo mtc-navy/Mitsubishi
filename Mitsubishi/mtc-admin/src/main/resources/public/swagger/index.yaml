@@ -1,0 +1,1391 @@
+swagger: '2.0'
+info:
+  description: 优聚众成
+  version: 3.0.0
+  title: mtc
+
+basePath: /
+
+schemes:
+  - http
+
+#定义接口数据
+paths:
+  /captcha.jpg:
+    get:
+      tags:
+        - 用户登录
+      summary: 获取验证码
+      produces:
+        - application/octet-stream
+  /sys/login:
+    post:
+      tags:
+        - 用户登录
+      summary: 用户登录
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          description: 用户名
+          in: query
+          type: string
+          required: true
+        - name: password
+          description: 密码
+          in: query
+          type: string
+          required: true
+        - name: captcha
+          description: 验证码
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          schema:
+            type: object
+            properties:
+              code:
+                description: 状态码 0：成功  非0：失败
+                type: integer
+                format: int32
+              token:
+                description: token
+                type: string
+              expire:
+                description: 过期时长
+                type: integer
+                format: int32
+              msg:
+                description: 失败原因
+                type: string
+
+  /sys/user/list:
+    get:
+      tags:
+        - 管理员管理
+      summary: 管理员列表
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          description: 页码
+          in: query
+          type: integer
+          required: true
+        - name: limit
+          description: 每页条数
+          in: query
+          type: integer
+          required: true
+        - name: sidx
+          description: 排序字段
+          in: query
+          type: string
+        - name: order
+          description: 排序方式，如：asc、desc
+          in: query
+          type: string
+        - name: username
+          description: 用户名
+          in: query
+          type: string
+      responses:
+        '200':
+          description: 返回管理员列表
+          schema:
+            $ref: '#/definitions/SysUserEntity'
+  /sys/user/info:
+    get:
+      tags:
+        - 管理员管理
+      summary: 当前管理员信息
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回当前管理员信息
+          schema:
+            $ref: '#/definitions/SysUserEntity'
+  /sys/user/info/{userId}:
+    get:
+      tags:
+        - 管理员管理
+      summary: 获取管理员信息
+      produces:
+        - application/json
+      parameters:
+        - name: userId
+          description: 用户ID
+          in: path
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: 返回管理员信息
+          schema:
+            $ref: '#/definitions/SysUserEntity'
+  /sys/user/password:
+    post:
+      tags:
+        - 管理员管理
+      summary: 修改密码
+      produces:
+        - application/json
+      parameters:
+        - name: password
+          description: 原密码
+          in: query
+          type: string
+          required: true
+        - name: newPassword
+          description: 新密码
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/user/save:
+    post:
+      tags:
+        - 管理员管理
+      summary: 添加管理员
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 管理员对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysUserEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/user/update:
+    post:
+      tags:
+        - 管理员管理
+      summary: 修改管理员
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 管理员对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysUserEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/user/delete:
+    post:
+      tags:
+        - 管理员管理
+      summary: 删除管理员
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 用户ID列表
+          in: body
+          type: array
+          items:
+            type: integer
+            format: int64
+            default: 0
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+  /sys/dept/list:
+    get:
+      tags:
+        - 部门管理
+      summary: 部门列表
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回部门列表
+          schema:
+            $ref: '#/definitions/SysDeptEntity'
+  /sys/dept/select:
+    get:
+      tags:
+        - 部门管理
+      summary: 选择部门
+      description: 添加、修改部门的时候，选择上级部门接口
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回部门列表
+          schema:
+            $ref: '#/definitions/SysDeptEntity'
+  /sys/dept/info:
+    get:
+      tags:
+        - 部门管理
+      summary: 获取上级部门Id(管理员则为0)
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回部门信息
+          schema:
+            type: object
+            properties:
+              code:
+                description: 状态码 0：成功  非0：失败
+                type: integer
+                format: int32
+              deptId:
+                description: 上级部门ID
+                type: integer
+                format: int64
+              msg:
+                description: 失败原因
+                type: string
+  /sys/dept/info/{deptId}:
+    get:
+      tags:
+        - 部门管理
+      summary: 获取部门信息
+      produces:
+        - application/json
+      parameters:
+        - name: deptId
+          description: 部门ID
+          in: path
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: 返回部门信息
+          schema:
+            $ref: '#/definitions/SysDeptEntity'
+  /sys/dept/update:
+    post:
+      tags:
+        - 部门管理
+      summary: 修改部门
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 部门对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysDeptEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/dept/init:
+    post:
+      tags:
+      - 部门管理
+      summary: 提取部门信息
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+  /sys/role/list:
+    get:
+      tags:
+        - 角色管理
+      summary: 角色列表
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          description: 页码
+          in: query
+          type: integer
+          required: true
+        - name: limit
+          description: 每页条数
+          in: query
+          type: integer
+          required: true
+        - name: sidx
+          description: 排序字段
+          in: query
+          type: string
+        - name: order
+          description: 排序方式，如：asc、desc
+          in: query
+          type: string
+        - name: roleName
+          description: 角色名
+          in: query
+          type: string
+      responses:
+        '200':
+          description: 返回管理员列表
+          schema:
+            $ref: '#/definitions/SysRoleEntity'
+  /sys/role/select:
+    get:
+      tags:
+        - 角色管理
+      summary: 当前账号角色列表
+      description: 如果是超级管理员，则能查询所有的角色列表
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回管理员列表
+          schema:
+            $ref: '#/definitions/SysRoleEntity'
+  /sys/role/info/{roleId}:
+    get:
+      tags:
+        - 角色管理
+      summary: 获取角色信息
+      produces:
+        - application/json
+      parameters:
+        - name: roleId
+          description: 角色ID
+          in: path
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: 返回角色信息
+          schema:
+            $ref: '#/definitions/SysRoleEntity'
+  /sys/role/save:
+    post:
+      tags:
+        - 角色管理
+      summary: 添加角色
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 角色对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysRoleEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/role/update:
+    post:
+      tags:
+        - 角色管理
+      summary: 修改角色
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 角色对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysRoleEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/role/delete:
+    post:
+      tags:
+        - 角色管理
+      summary: 删除角色
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 角色ID列表
+          in: body
+          type: array
+          items:
+            type: integer
+            format: int64
+            default: 0
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+  /sys/menu/list:
+    get:
+      tags:
+        - 菜单管理
+      summary: 菜单列表
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回菜单列表
+          schema:
+            $ref: '#/definitions/SysMenuEntity'
+  /sys/menu/nav:
+    get:
+      tags:
+        - 菜单管理
+      summary: 导航菜单列表
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回导航菜单列表
+          schema:
+            $ref: '#/definitions/SysMenuEntity'
+  /sys/menu/select:
+    get:
+      tags:
+        - 菜单管理
+      summary: 选择菜单
+      description: 添加、修改菜单的时候，选择上级菜单接口
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 返回菜单列表
+          schema:
+            $ref: '#/definitions/SysMenuEntity'
+  /sys/menu/info/{menuId}:
+    get:
+      tags:
+        - 菜单管理
+      summary: 获取菜单信息
+      produces:
+        - application/json
+      parameters:
+        - name: menuId
+          description: 菜单ID
+          in: path
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: 返回菜单信息
+          schema:
+            $ref: '#/definitions/SysRoleEntity'
+  /sys/menu/save:
+    post:
+      tags:
+        - 菜单管理
+      summary: 添加菜单
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 菜单对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysMenuEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/menu/update:
+    post:
+      tags:
+        - 菜单管理
+      summary: 修改菜单
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 菜单对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysMenuEntityEdit'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/menu/delete:
+    post:
+      tags:
+        - 菜单管理
+      summary: 删除菜单
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 菜单ID列表
+          in: body
+          type: array
+          items:
+            type: integer
+            format: int64
+            default: 0
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+  /sys/log/list:
+    get:
+      tags:
+        - 系统日志
+      summary: 日志列表
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          description: 页码
+          in: query
+          type: integer
+          required: true
+        - name: limit
+          description: 每页条数
+          in: query
+          type: integer
+          required: true
+        - name: sidx
+          description: 排序字段
+          in: query
+          type: string
+        - name: order
+          description: 排序方式，如：asc、desc
+          in: query
+          type: string
+        - name: key
+          description: 用户名或用户操作
+          in: query
+          type: string
+      responses:
+        '200':
+          description: 返回日志列表
+          schema:
+            $ref: '#/definitions/SysLogEntity'
+
+  /sys/config/list:
+    get:
+      tags:
+        - 参数管理
+      summary: 参数列表
+      produces:
+        - application/json
+      parameters:
+        - name: page
+          description: 页码
+          in: query
+          type: integer
+          required: true
+        - name: limit
+          description: 每页条数
+          in: query
+          type: integer
+          required: true
+        - name: sidx
+          description: 排序字段
+          in: query
+          type: string
+        - name: order
+          description: 排序方式，如：asc、desc
+          in: query
+          type: string
+        - name: key
+          description: 参数名
+          in: query
+          type: string
+      responses:
+        '200':
+          description: 返回参数列表
+          schema:
+            $ref: '#/definitions/SysConfigEntity'
+  /sys/config/info/{id}:
+    get:
+      tags:
+        - 参数管理
+      summary: 获取参数信息
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          description: 参数ID
+          in: path
+          type: integer
+          required: true
+      responses:
+        '200':
+          description: 返回参数信息
+          schema:
+            $ref: '#/definitions/SysConfigEntity'
+  /sys/config/save:
+    post:
+      tags:
+        - 参数管理
+      summary: 添加参数
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 参数对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysConfigEntity'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/config/update:
+    post:
+      tags:
+        - 参数管理
+      summary: 修改参数
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 参数对象
+          in: body
+          type: string
+          schema:
+            $ref: '#/definitions/SysConfigEntity'
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/config/delete:
+    post:
+      tags:
+        - 参数管理
+      summary: 删除参数
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          description: 参数ID列表
+          in: body
+          type: array
+          items:
+            type: integer
+            format: int64
+            default: 0
+          required: true
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+  /sys/customer/list:
+    post:
+      tags:
+        - 客户管理
+      summary: 客户列表
+      produces:
+              - application/json
+      parameters:
+        - name: q
+          description: 客户code或客户名称
+          in: query
+          type: string
+        - name: type
+          in: query
+          type: string
+          description: DETAIL:详细数据 SIMPLE:简单数据
+      responses:
+              '200':
+                schema:
+                  $ref: '#/definitions/CustomerList'
+
+  /sys/common/{listType}:
+    get:
+      tags:
+      - 列表管理
+      summary: 获取列表信息
+      produces:
+      - application/json
+      parameters:
+      - name: listType
+        description: 列表ID
+        in: path
+        type: string
+        required: true
+        default: prodList
+      - name: pageIndex
+        description: 页码
+        in: query
+        type: integer
+        default: 1
+      - name: pageSize
+        description: 页数
+        in: query
+        type: integer
+        default: 20
+      - name: param
+        description: 动态参数
+        in: query
+        type: string
+        default: '{param1:1,param2:2,param3:3,param4:4}'
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/PageEntity'
+
+  /sys/budgorga/init:
+    post:
+      tags:
+      - 预算组织架构
+      summary: 提取预算组织架构信息
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+  /sys/budgorga/treeList:
+    get:
+      tags:
+      - 预算组织架构
+      summary: 树状数据列表
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/BudgOrgaList'
+  /sys/budgorga/view/{id}:
+    get:
+      tags:
+      - 预算组织架构
+      summary: 查看预算组织架构
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/BudgOrgaView'
+  /sys/budgorga/edit:
+    post:
+      tags:
+      - 预算组织架构
+      summary: 更新预算组织架构
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        description: 管理员对象
+        in: body
+        type: object
+        schema:
+          $ref: '#/definitions/BudgOrgaEditEntity'
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/R'
+
+#定义数据模型
+definitions:
+  R:
+      type: object
+      properties:
+        code:
+          description: 状态码 0：成功  非0：失败
+          type: integer
+          format: int32
+        msg:
+          description: 失败原因
+          type: string
+  PageEntity:
+    type: object
+    properties:
+      code:
+        description: 消息代码(0:成功,其它:失败)
+        type: integer
+        format: int64
+      msg:
+        description: 消息说明
+        type: string
+      page:
+        type: object
+        properties:
+          totalCount:
+            description: 总记录数
+            type: integer
+          pageSize:
+            description: 每页记录数
+            type: integer
+          totalPage:
+            description: 总页数
+            type: integer
+          currPage:
+            description: 当前页
+            type: integer
+          fields:
+            description: 显示列名（数组）
+            type: string
+          list:
+            description: 返回数据对象数组
+            type: string
+
+  SysUserEntity:
+    type: object
+    properties:
+      userId:
+        description: 用户ID
+        type: integer
+        format: int64
+      username:
+        description: 用户名
+        type: string
+      deptId:
+        description: 部门ID
+        type: integer
+        format: int64
+      deptName:
+        description: 部门名称
+        type: string
+      password:
+        description: 密码
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      mobile:
+        description: 手机号
+        type: string
+      status:
+        description: 状态  0：禁用   1：正常
+        type: integer
+        format: int32
+      roleIdList:
+        description: 角色ID列表
+        type: array
+        items:
+          type: integer
+          format: int64
+      createUserId:
+        description: 创建者ID
+        type: integer
+        format: int64
+      createTime:
+        description: 创建时间
+        type: string
+        format: date-time
+  SysUserEntityEdit:
+      type: object
+      properties:
+        userId:
+          description: 用户ID
+          type: integer
+          format: int64
+        username:
+          description: 用户名
+          type: string
+        deptId:
+          description: 部门ID
+          type: integer
+          format: int64
+        password:
+          description: 密码
+          type: string
+        email:
+          description: 邮箱
+          type: string
+        mobile:
+          description: 手机号
+          type: string
+        status:
+          description: 状态  0：禁用   1：正常
+          type: integer
+          format: int32
+        roleIdList:
+          description: 角色ID列表
+          type: array
+          items:
+            type: integer
+            format: int32
+  SysDeptEntity:
+    type: object
+    properties:
+      deptId:
+        description: 部门ID
+        type: integer
+        format: int64
+      deptCode:
+        description: 部门Code
+        type: string
+      name:
+        description: 部门名称
+        type: string
+      parentId:
+        description: 上级部门ID，一级部门为0
+        type: integer
+        format: int64
+      parentName:
+        description: 上级部门名称
+        type: string
+      parentCode:
+        description: 上级部门Code
+        type: string
+      orderNum:
+        description: 排序
+        type: integer
+        format: int32
+      delFlag:
+        descritpion: 是否激活：0.激活 1.未激活
+        type: integer
+      prolineyn:
+        description: 是否影响产品线 Y：影响 N：不影响
+        type: string
+      compyn:
+        description: 是否影响注册公司：Y：影响 N：不影响
+        type: string
+      salesyn:
+        description: 是否影响销售单元 Y：影响 N：不影响
+        type: string
+      deptType:
+        description: 部门类型：A.生产 B.销售 C.管理 D.技术
+        type: string
+      type:
+        description: 类型 A.注册法人 B.部门 C.岗位
+        type: string
+      hrid:
+        description: HR ID 号
+        type: string
+      open:
+        description: 是否展开   true：展开   false：不展开
+        type: boolean
+        format: int32
+  SysDeptEntityEdit:
+    type: object
+    properties:
+      name:
+        description: 部门名称
+        type: string
+      deptId:
+        description: 部门ID
+        type: long
+        format: long
+      prolineyn:
+        description: 是否影响产品线 Y：影响 N：不影响
+        type: string
+      compyn:
+        description: 是否影响注册公司：Y：影响 N：不影响
+        type: string
+      salesyn:
+        description: 是否影响销售单元 Y：影响 N：不影响
+        type: string
+      delFlag:
+        descritpion: 是否激活：0.激活 1.未激活
+        type: integer
+      deptType:
+        description: 部门类型：A.生产 B.销售 C.管理 D.技术
+        type: string
+
+  SysRoleEntity:
+    type: object
+    properties:
+      roleId:
+        description: 角色ID
+        type: integer
+        format: int64
+      roleName:
+        description: 角色名称
+        type: string
+      deptId:
+        description: 部门ID
+        type: integer
+        format: int64
+      deptName:
+        description: 部门名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      menuIdList:
+        description: 菜单ID列表
+        type: array
+        items:
+          type: integer
+          format: int64
+      createUserId:
+        description: 创建者ID
+        type: integer
+        format: int64
+      createTime:
+        description: 创建时间
+        type: string
+        format: date-time
+  SysRoleEntityEdit:
+    type: object
+    properties:
+      roleId:
+        description: 角色ID
+        type: integer
+        format: int64
+      roleName:
+        description: 角色名称
+        type: string
+      deptId:
+        description: 部门ID
+        type: integer
+        format: int64
+      remark:
+        description: 备注
+        type: string
+      menuIdList:
+        description: 菜单ID列表
+        type: array
+        items:
+          type: integer
+          format: int64
+  SysMenuEntity:
+    type: object
+    properties:
+      menuId:
+        description: 菜单ID
+        type: integer
+        format: int64
+      name:
+        description: 菜单名称
+        type: string
+      parentId:
+        description: 父菜单ID，一级菜单为0
+        type: integer
+        format: int64
+      parentName:
+        description: 父菜单名称
+        type: string
+      url:
+        description: 菜单URL
+        type: string
+      perms:
+        description: 授权标识
+        type: string
+      type:
+        description: 类型     0：目录   1：菜单   2：按钮
+        type: integer
+        format: int32
+      icon:
+        description: 菜单图标
+        type: string
+      orderNum:
+        description: 排序
+        type: integer
+        format: int32
+      open:
+        description: 是否展开   true：展开   false：不展开
+        type: boolean
+        format: int32
+  SysMenuEntityEdit:
+    type: object
+    properties:
+      menuId:
+        description: 菜单ID
+        type: integer
+        format: int64
+      name:
+        description: 菜单名称
+        type: string
+      parentId:
+        description: 父菜单ID，一级菜单为0
+        type: integer
+        format: int64
+      url:
+        description: 菜单URL
+        type: string
+      perms:
+        description: 授权标识
+        type: string
+      type:
+        description: 类型     0：目录   1：菜单   2：按钮
+        type: integer
+        format: int32
+      icon:
+        description: 菜单图标
+        type: string
+      orderNum:
+        description: 排序
+        type: integer
+        format: int32
+  SysLogEntity:
+    type: object
+    properties:
+      id:
+        description: 日志ID
+        type: integer
+        format: int64
+      username:
+        description: 用户名
+        type: string
+      operation:
+        description: 用户操作
+        type: string
+      method:
+        description: 请求方法
+        type: string
+      params:
+        description: 请求参数
+        type: string
+      time:
+        description: 执行时长(毫秒)
+        type: integer
+        format: int64
+      ip:
+        description: IP地址
+        type: string
+      createTime:
+        description: 创建时间
+        type: string
+        format: date-time
+  SysConfigEntity:
+    type: object
+    properties:
+      id:
+        description: 参数ID
+        type: integer
+        format: int64
+      key:
+        description: 参数名
+        type: string
+      value:
+        description: 参数值
+        type: string
+      remark:
+        description: 备注
+        type: string
+  SysOssEntity:
+    type: object
+    properties:
+      id:
+        description: ID
+        type: integer
+        format: int64
+      url:
+        description: URL地址
+        type: string
+      createTime:
+        description: 创建时间
+        type: string
+        format: date-time
+  SysCloudStorageEntity:
+    type: object
+    properties:
+      type:
+        description: 类型 1：七牛  2：阿里云  3：腾讯云
+        type: integer
+        format: int32
+      qiniuDomain:
+        description: 七牛绑定的域名
+        type: string
+      qiniuPrefix:
+        description: 七牛路径前缀
+        type: string
+      qiniuAccessKey:
+        description: 七牛ACCESS_KEY
+        type: string
+      qiniuSecretKey:
+        description: 七牛SECRET_KEY
+        type: string
+      qiniuBucketName:
+        description: 七牛存储空间名
+        type: string
+      aliyunDomain:
+        description: 阿里云绑定的域名
+        type: string
+      aliyunPrefix:
+        description: 阿里云路径前缀
+        type: string
+      aliyunEndPoint:
+        description: 阿里云EndPoint
+        type: string
+      aliyunAccessKeyId:
+        description: 阿里云AccessKeyId
+        type: string
+      aliyunAccessKeySecret:
+        description: 阿里云AccessKeySecret
+        type: string
+      aliyunBucketName:
+        description: 阿里云BucketName
+        type: string
+      qcloudDomain:
+        description: 腾讯云绑定的域名
+        type: string
+      qcloudPrefix:
+        description: 腾讯云路径前缀
+        type: string
+      qcloudAppId:
+        description: 腾讯云AppId
+        type: string
+      qcloudSecretId:
+        description: 腾讯云SecretId
+        type: string
+      qcloudSecretKey:
+        description: 腾讯云SecretKey
+        type: string
+      qcloudBucketName:
+        description: 腾讯云BucketName
+        type: string
+      qcloudRegion:
+        description: 腾讯云COS所属地区
+        type: string
+  ScheduleJobEntity:
+    type: object
+    properties:
+      jobId:
+        description: 任务ID
+        type: integer
+        format: int64
+      beanName:
+        description: spring bean名称
+        type: string
+      methodName:
+        description: 方法名
+        type: string
+      params:
+        description: 参数
+        type: string
+      cronExpression:
+        description: cron表达式
+        type: string
+      status:
+        description: 任务状态  0：正常  1：暂停
+        type: integer
+        format: int32
+      remark:
+        description: 备注
+        type: string
+      createTime:
+        description: 创建时间
+        type: string
+        format: date-time
+
+  CustomerList:
+    type: object
+    properties:
+      code:
+        description: 状态码 0：成功  非0：失败
+        type: integer
+        format: int32
+      msg:
+        description: 失败原因
+        type: string
+      list:
+        type: array
+        items:
+          type: object
+          properties:
+            code:
+              type: string
+              description: 客户id
+            name:
+              type: string
+              description: 客户姓名
+            availableBalance:
+              type: number
+              description: 可用额度   (type为DETAIL时返回)
+            intercourseFunds:
+              type: number
+              description: 往来款    (type为DETAIL时返回)
+            discountBalance:
+              type: number
+              description: 折扣余额   (type为DETAIL时返回)
+            availableAmount:
+              type: number
+              description: 可用金额   (type为DETAIL时返回)
+
+  BudgOrgaList:
+    type: object
+    properties:
+      code:
+        description: 状态码 0：成功  非0：失败
+        type: integer
+        format: int32
+      msg:
+        description: 失败原因
+        type: string
+      orgaList:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/BudgOrgaEntity'
+
+  BudgOrgaView:
+    type: object
+    properties:
+      code:
+        description: 状态码 0：成功  非0：失败
+        type: integer
+        format: int32
+      msg:
+        description: 失败原因
+        type: string
+      budgorga:
+        type: object
+        $ref: '#/definitions/BudgOrgaEntity'
+
+  BudgOrgaEntity:
+    type: object
+    properties:
+      docentry:
+        type: integer
+        description: 主键id
+      code:
+        type: string
+        description: 代码
+      name:
+        type: string
+        description: 名称
+      parentId:
+        type: integer
+        description: 上级部门id
+      parentCode:
+        type: string
+        description: 上级code
+      parentName:
+        type: string
+        description: 上级名称
+      type:
+        type: string
+        description: 类型：A.法人 B.经营单元 C.销售单元
+      delFlag:
+        type: integer
+        description: 是否激活：0.激活 1.不激活
+      prolcode:
+        type: string
+        description: 产品线代码
+      prolname:
+        type: string
+        description: 产品线名称
+
+  BudgOrgaEditEntity:
+    type: object
+    properties:
+      docentry:
+        type: integer
+        description: 主键id
+      delFlag:
+        type: integer
+        description: 是否激活：0.激活 1.不激活
+
+

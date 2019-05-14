@@ -1,0 +1,25 @@
+#servicelayer
+sap:
+  servicelayer:
+    url: https://hdemo1.sapb1c.com:50000/b1s/v1
+    username: manager
+    password: 1234
+    company: SBO_WXHG
+
+#验证码
+kaptcha:
+  #是否启用
+  active: false
+  textproducer:
+    font:
+      #边框颜色
+      color: black
+    char:
+      #文字间隔
+      space: 5
+      #验证码长度
+      length: 4
+
+#水晶报表路径
+rpt:
+  path: /WEB-INF/rpt/prod/
