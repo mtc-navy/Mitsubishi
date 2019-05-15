@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>库存转储列表</title>
+    <#include "/header.html">
+    <link rel="stylesheet" href="${request.contextPath}/statics/plugins/vue-element-extends/theme-chalk-2.7.2.css?${version}">
+    <link rel="stylesheet" href="${request.contextPath}/statics/plugins/vue-element-extends/vue-element-extends-1.2.6.css?${version}">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="row">
+            <div class="form-group">
+                <div class="search">分支　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select size="small" v-model="search.BPLId" :filter-method="initBranches" filterable clearable style="width:100%">
+                        <el-option
+                                v-for="branch in branches"
+                                :key="branch.bplid"
+                                :label="branch.bplname"
+                                :value="branch.bplid">
+                            <span style="float: left">{{ branch.bplname }}</span>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="search">单据状态</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select size="small" v-model="search.DocStatus" clearable style="width:100%">
+                        <el-option
+                                v-for="docStatus in docStatusList"
+                                :key="docStatus.value"
+                                :label="docStatus.value"
+                                :value="docStatus.code">
+                        </el-option>
+                    </el-select>
+                </div>
+
+                <div class="search">从仓库</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select style="width:100%" placeholder="请选择" filterable clearable @change="loadMaterials" v-model="search.fromWhsCode" size="small">
+                        <el-option
+                                v-for="whs in qryfromWhsList"
+                                :key="whs.whsCode"
+                                :label="whs.whsCode+'-'+whs.whsName+'-'+whs.shortName"
+                                :value="whs.whsCode">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <a class="btn btn-default btn-left" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+            <#if shiro.hasPermission("sys:stocktransfer:saverequest")>
+            <a class="btn btn-primary btn-left" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            </#if>
+        </div>
+        <div class="row">
+            <div class="search">单据日期</div>
+            <div class="padding-5 col-sm-2">
+                <el-date-picker
+                        v-model="search.StartDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        style="width:100%"
+                        placeholder="选择日期" size="small">
+                </el-date-picker>
+            </div>
+            <div class="search">至　　　</div>
+            <div class="padding-5 col-sm-2">
+                <el-date-picker
+                        v-model="search.EndDate"
+                        type="date"
+                        value-format="yyyy-MM-dd"
+                        style="width:100%"
+                        placeholder="选择日期" size="small">
+                </el-date-picker>
+            </div>
+            <div class="search">到仓库</div>
+            <div class="padding-5 col-sm-2">
+                <el-select style="width:100%" placeholder="请选择" filterable clearable v-model="search.toWhsCode" size="small">
+                    <el-option
+                            v-for="whs in qrytoWhsList"
+                            :key="whs.whsCode"
+                            :label="whs.whsCode+'-'+whs.whsName+'-'+whs.shortName"
+                            :value="whs.whsCode">
+                    </el-option>
+                </el-select>
+            </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group" style="height:10px">
+                <div class="col-sm-8">{{title}}</div>
+                <div class="col-sm-4" style="margin-top: -9px;">
+                    <#if shiro.hasPermission("sys:invoice:print")>
+                        <a class="btn btn-default" @click="print" v-show="showButton.print" style="float: right">打印</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:stocktransfer:cancel")>
+                        <a class="btn btn-default" @click="cancel" v-show="showButton.cancel" style="float: right">取消</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:stocktransfer:saverequest")>
+                        <a class="btn btn-default" @click="add" v-show="showButton.add" style="float: right">新增</a>
+                    </#if>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs">
+            <li role="presentation" :class="{active:tabShow}"><a href="javascript:void(0);">内容</a></li>
+        </ul>
+        <form class="form-horizontal">
+            <div v-show="tabShow">
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">分支</div>
+                    <div class="col-sm-4">
+                        <el-select size="small" @change="changeBranch" v-model="transfer.bplId" :filter-method="initBranches" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="branch in branches"
+                                    :key="branch.bplid"
+                                    :label="branch.bplname"
+                                    :value="branch.bplid">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-2 control-label">单据编号</div>
+                    <div class="col-sm-4">
+                        <el-input
+                                :disabled="true"
+                                size="small"
+                                v-model="transfer.docNum"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">从仓库</div>
+                    <div class="col-sm-4">
+                        <el-select style="width:100%" placeholder="请选择" filterable clearable @change="loadMaterials" v-model="transfer.fromWhsCode" size="small">
+                            <el-option
+                                    v-for="whs in fromWhsList"
+                                    :key="whs.whsCode"
+                                    :label="whs.whsCode+'-'+whs.whsName+'-'+whs.shortName"
+                                    :value="whs.whsCode">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-2 control-label">单据日期</div>
+                    <div class="col-sm-4">
+                        <el-date-picker
+                                v-model="transfer.taxDate"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                style="width:100%"
+                                placeholder="选择日期" size="small">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">到仓库</div>
+                    <div class="col-sm-4">
+                        <el-select style="width:100%" placeholder="请选择" filterable clearable v-model="transfer.toWhsCode" size="small">
+                            <el-option
+                                    v-for="whs in toWhsList"
+                                    :key="whs.whsCode"
+                                    :label="whs.whsCode+'-'+whs.whsName+'-'+whs.shortName"
+                                    :value="whs.whsCode">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-2 control-label">单据状态</div>
+                    <div class="col-sm-4">
+                        <el-input
+                                :disabled="true"
+                                size="small"
+                                v-model="transfer.docStatusName"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">运输方式</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="transfer.transType" size="small" style="width:100%">
+                            <el-option label="自运" value="A"></el-option>
+                            <el-option label="代运" value="B"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-2 control-label">业务类型</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="transfer.busiType" size="small" style="width:100%">
+                            <el-option label="工厂司机拉货" value="A"></el-option>
+                            <el-option label="客户拉货" value="B"></el-option>
+                            <el-option label="无运费" value="C"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">车牌号</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="transfer.carNo" @change="selectedCarNo" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="carNo in carNos"
+                                    :key="carNo.carNo"
+                                    :label="carNo.carNo"
+                                    :value="carNo.carNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-2 control-label">过磅单号</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="transfer.boundNo" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="boundNo in boundNos"
+                                    :key="boundNo.boundNo"
+                                    :label="boundNo.boundNo"
+                                    :value="boundNo.boundNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2 control-label">司机</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="transfer.driver"  filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="driver in drivers"
+                                    :key="driver.id"
+                                    :label="driver.code"
+                                    :value="driver.id">
+                                <span style="float: left">{{ driver.code }}</span>
+                            </el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="col-sm-2 control-label"></div>
+                    <div class="col-sm-4">
+                    </div>
+                </div>
+            </div>
+            <!--物料信息-->
+            <div class="form-group" style="padding-bottom: 4px">
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="active"><a href="#">物料信息</a></li>
+                </ul>
+
+                <elx-editable
+                        ref="editable"
+                        border
+                        size="base"
+                        :edit-config="{trigger: 'click', mode: 'cell'}"
+                        :data.sync="materials"
+                        @edit-active="editActiveEvent"
+                        @blur-active="blurActiveEvent"
+                >
+                    <elx-editable-column
+                            width="50"
+                            label="序号"
+                            >
+                        <template slot-scope="scope">
+                            {{scope.row.index = (scope.$index+1)}}
+                        </template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="fromWarehouseCode"
+                            label="从仓库"
+                            :edit-render="{type: 'default'}"
+                            >
+                        <template v-slot:edit="scope">
+                            <el-select v-model="scope.row.fromWarehouseCode" size="small" filterable  @change="changeFromWareHouse(scope)">
+                                <el-option v-for="item in fromWhsList" :key="item.whsCode" filter :value="item.whsCode" :label="item.whsCode+'-'+item.whsName+'-'+item.shortName">
+
+                                </el-option>
+                            </el-select>
+                        </template>
+                        <template v-slot="scope">{{ scope.row.fromWarehouseName }}</template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="warehouseCode"
+                            label="到仓库"
+                            :edit-render="{type: 'default'}"
+                    >
+                        <template v-slot:edit="scope">
+                            <el-select v-model="scope.row.warehouseCode" size="small" filterable  @change="changeToWareHouse(scope)">
+                                <el-option v-for="item in toWhsList" :key="item.whsCode" filter :value="item.whsCode" :label="item.whsCode+'-'+item.whsName+'-'+item.shortName">
+
+                                </el-option>
+                            </el-select>
+                        </template>
+                        <template v-slot="scope">{{ scope.row.warehouseName }}</template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="itemCode"
+                            label="物料代码"
+                            :edit-render="{type: 'default'}"
+                    >
+                        <template v-slot:edit="scope">
+                            <el-select v-model="scope.row.itemCode" size="small" filterable @change="changeMaterial(scope)">
+                                <el-option v-for="item in scope.row.items" :key="item.itemCode" filter :value="item.itemCode" :label="item.itemCode+'-'+item.itemName+'-'+item.shortName">
+
+                                </el-option>
+                            </el-select>
+                        </template>
+                        <template v-slot="scope">{{ scope.row.itemCode }}</template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="itemName"
+                            label="物料名称"
+                    >
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="factor1"
+                            label="件重"
+                    >
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="factor2"
+                            label="件数"
+                            :edit-render="{type: 'default',autofocus:true}"
+                    >
+                        <template v-slot:edit="scope">
+                            <el-input-number precision="0" v-model="scope.row.factor2" size="small" :controls="false" :min="1"></el-input-number>
+                        </template>
+                        <template  v-slot="scope">{{ scope.row.factor2 }}</template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                            prop="quantity"
+                            label="数量(KG)"
+                            :edit-render="{type: 'default',autofocus:true}"
+                    >
+                        <template v-slot:edit="scope">
+                            <el-input-number precision="0" v-model="scope.row.quantity" size="small" :controls="false" :min="1"></el-input-number>
+                        </template>
+                        <template  v-slot="scope">{{ scope.row.quantity }}</template>
+                    </elx-editable-column>
+                    <elx-editable-column
+                        prop="stock"
+                        label="库存"
+                    >
+                    </elx-editable-column>
+                    <elx-editable-column label="操作" width="100">
+                        <template v-slot="scope">
+                            <el-button size="mini" type="danger" @click="removeEvent(scope.row)">删除</el-button>
+                        </template>
+                    </elx-editable-column>
+                </elx-editable>
+
+                <span v-show="showButton.addMaterial">
+                    <a class="btn btn-default" @click="addMaterial" style="">新增物料</a>
+                </span>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-1" style="width: 3%;"></div>
+                <#if shiro.hasPermission("sys:stocktransfer:saverequest")>
+                    <span v-show="showButton.save">
+                       <input type="button" class="btn btn-primary"  @click="saveOrUpdateRequest" value="保存"/> &nbsp;&nbsp;
+                    </span>
+                </#if>
+                <#if shiro.hasPermission("sys:stocktransfer:update")>
+                    <span v-show="showButton.update">
+                       <input type="button" id="btnUpdate" class="btn btn-primary"  @click="saveOrUpdateRequest" value="更新"/> &nbsp;&nbsp;
+                    </span>
+                </#if>
+                <#if shiro.hasPermission("sys:stocktransfer:save")>
+                    <span v-show="showButton.toDocument">
+                    <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="生成转储单"/> &nbsp;&nbsp;
+                    </span>
+                </#if>
+                <input type="button" class="btn btn-warning" @click="back" value="返回"/> &nbsp;&nbsp;
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script type="text/html" id="chooseMaterial">
+    <input type="text" lay-event="click" autocomplete="off"
+           {{#  if(typeof(d.itemCode) !="undefined"){ }}
+           value="{{d.itemCode}}"
+           {{#  } }}
+           placeholder="" class="layui-input table-edit tags">
+</script>
+
+<!-- 引入脚本 -->
+<script src="${request.contextPath}/statics/plugins/vue-element-extends/xe-utils-1.8.19.js?${version}"></script>
+<script src="${request.contextPath}/statics/plugins/vue-element-extends/vue-element-extends-1.2.6.js?${version}"></script>
+<script src="${request.contextPath}/statics/js/component/stockTransferMaterialsTable.js?${version}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/stockTransfer.js?${version}"></script>
+</body>
+</html>

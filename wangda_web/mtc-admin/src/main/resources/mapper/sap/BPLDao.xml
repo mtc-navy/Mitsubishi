@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.BPLDao">
+
+    <!-- 根据用户名，查询分支信息 -->
+    <select id="search" resultType="io.mtc.modules.sap.entity.BPLEntity">
+		CALL "MTC_Get_BPL_DataSource"(#{CardCode},#{DataType},#{UserName})
+	</select>
+
+    <select id="searchWithKey" resultType="io.mtc.modules.sap.entity.BPLEntity">
+		CALL "MTC_Get_BPL_DataSource"(#{CardCode},#{DataType},#{UserName},#{FilterValue})
+	</select>
+
+    <select id="selectByKey" resultType="io.mtc.modules.sap.entity.BPLEntity">
+        select
+          "BPLId","BPLName","TaxIdNum",
+          "DflCust",T1."CardName" AS "CustName",CP1."CntctCode" AS "CustCntct",
+          "DflVendor",T2."CardName" AS "VendorName",CP2."CntctCode" AS "VendorCntct"
+        from "OBPL" T0
+        LEFT JOIN "OCRD" T1 ON T1."CardCode"=T0."DflCust" AND T1."CardType"='C'
+        LEFT JOIN "OCPR" CP1 ON CP1."CardCode"=T1."CardCode" AND CP1."Name"=T1."CntctPrsn"
+        LEFT JOIN "OCRD" T2 ON T2."CardCode"=T0."DflVendor" AND T2."CardType"='S'
+        LEFT JOIN "OCPR" CP2 ON CP2."CardCode"=T2."CardCode" AND CP2."Name"=T1."CntctPrsn"
+        where "BPLId"=#{BPLId}
+    </select>
+
+    <!--根据用户名得到当前权限范围内分支-->
+    <select id="searchByUser" resultType="io.mtc.modules.sap.entity.BPLEntity">
+		SELECT T1."BPLId",T1."BPLName",T1."TaxIdNum"
+		FROM OBPL T1
+		INNER JOIN USR6 T2 ON T2."BPLId"=T1."BPLId"
+		WHERE T1."Disabled"='N' AND T2."UserCode"=#{UserName} AND (#{FilterValue}='' OR T1."BPLName" LIKE #{FilterValue})
+	</select>
+</mapper>

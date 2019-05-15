@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.ItemPriceDao">
+
+    <select id="search" resultType="io.mtc.modules.sap.entity.ItemPriceEntity">
+		CALL "MTC_Get_ItemPrice"(#{CardCode},#{ItemCode},#{DocDate},#{BPLId})
+	</select>
+    
+    <select id="getSupRegName" resultType="java.lang.String">
+      SELECT T1."U_RegSupName"
+            FROM "@U_SODSR" T0
+            INNER JOIN "@U_SDSR1" T1 ON T0."DocEntry" = T1."DocEntry" AND T0."U_DiscCode" = 'Z005'
+            WHERE T0."U_BPLId" = #{bplid} AND T0."U_CardCode" = #{cardCode} AND T1."U_ItemCode" = #{itemCode} limit 1
+    </select>
+
+    <select id="searchDftWarehouse" resultType="java.lang.String">
+        SELECT T1."U_RDR1" AS "StockCode"
+        FROM "@U_CITWS" T0
+        INNER JOIN "@U_CIWS1" T1 ON T1."Code"=T0."Code"
+        INNER JOIN "OBPL" T2 ON T2."TaxIdNum"=T0."Code"
+        INNER JOIN "OITM" T3 ON T3."ItmsGrpCod"=T1."U_ItmsGrpCod"
+        WHERE T3."ItemCode"=#{ItemCode} AND T2."BPLId"=#{BPLId} limit 1
+	</select>
+
+    <select id="searchDistNumber" resultType="io.mtc.modules.sap.entity.DistNumberEntity">
+        CALL "MTC_Get_DistNumber"(#{ItemCode},#{WhsCode})
+    </select>
+
+    <select id="searchLastDistNumber" resultType="io.mtc.modules.sap.entity.DistNumberEntity">
+        CALL "MTC_Get_LastDistNumber"(#{CardCode},#{BPLId},#{ItemCode},#{WhsCode})
+    </select>
+
+    <select id="searchDeliveryDistNumber" resultType="io.mtc.modules.sap.entity.DistNumberEntity">
+        CALL "MTC_Get_DeliveryDistNumber"(#{DocEntry},#{ItemCode},#{LineNum})
+    </select>
+</mapper>

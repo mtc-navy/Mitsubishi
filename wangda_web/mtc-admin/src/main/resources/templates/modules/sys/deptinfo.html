@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>部门与岗位管理</title>
+    <#include "/header.html">
+    <link rel="stylesheet" href="${request.contextPath}/statics/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.css">
+    <script src="${request.contextPath}/statics/libs/bootstrap-table.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.min.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.bootstrap3.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/jquery.treegrid.extension.js"></script>
+    <script src="${request.contextPath}/statics/plugins/treegrid/tree.table.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div>
+        <form class="form-horizontal">
+
+
+            <div class="form-group col-md-4" style="border-right:1px solid #f6f6f6;padding-left: 0px">
+
+                <div>
+                    <div class="col-sm-10 " style="height:-webkit-fill-available;overflow-y: auto;padding-left: 0px">
+                        <div>
+                            <#if shiro.hasPermission("sys:dept:update")>
+                            <input type="button" class="btn btn-primary" @click="initDeptTree" value="提取数据"
+                                   style="text-align: left"/>
+                            </#if>
+                            <input type="button" class="btn btn-primary" @click="collapse" value="折叠"
+                                   style="text-align: left"/>
+                            <input type="button" class="btn btn-primary" @click="expand" value="展开"
+                                   style="text-align: left"/>
+                        </div>
+                        <div style="text-align: center">
+                            <strong>部门</strong>
+                        </div>
+                        <div style="overflow-x: auto"><ul id="deptTree" class="ztree"></ul></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group col-md-8">
+                <div style="text-align: center;margin-bottom: 5px"><strong>详细信息</strong></div>
+                <div class="form-group">
+                    <div class="col-sm-2  vue-label">类型</div>
+                    <div class="col-sm-4">
+                        <!--<el-input v-model="dept.type" placeholder="类型" readonly ></el-input>-->
+                        <el-select v-model="dept.type" placeholder="类型" disabled style="width:100%">
+                            <el-option
+                                    v-for="item in select.typeoptions"
+                                    :key="item.id"
+                                    :label="item.value"
+                                    :value="item.code">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2  vue-label">上级代码</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.parentId" placeholder="上级代码" disabled></el-input>
+                    </div>
+                    <div class="col-sm-2  vue-label">上级名称</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.parentName" placeholder="上级名称" disabled></el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2  vue-label">代码</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.deptCode" placeholder="代码" disabled></el-input>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2  vue-label">名称</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.name" placeholder="名称" disabled></el-input>
+                    </div>
+                    <div class="col-sm-2  vue-label">HR ID</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.hrId" placeholder="HR ID" disabled></el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2  vue-label">部门类型</div>
+                    <div class="col-sm-4">
+                        <el-select v-model="dept.deptType" placeholder="部门类型" style="width:100%" disabled>
+                            <el-option
+                                    v-for="item in select.depttypeoptions"
+                                    :key="item.code"
+                                    :label="item.value"
+                                    :value="item.code">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group" v-show="showCompany">
+                    <div class="col-sm-2  vue-label">所属大区</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.comareId" placeholder="所属大区" disabled></el-input>
+                    </div>
+                    <div class="col-sm-2  vue-label">大区名称</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.comareName" placeholder="大区名称" disabled></el-input>
+                    </div>
+                </div>
+                <div class="form-group" v-show="showBusUnit">
+                    <div class="col-sm-2  vue-label">经营单元代码</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.busDeptId" placeholder="经营单元代码" disabled></el-input>
+                    </div>
+                    <div class="col-sm-2  vue-label">经营单元名称</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.busDeptName" placeholder="经营单元名称" disabled></el-input>
+                    </div>
+                </div>
+                <div class="form-group" v-show="showBusUnit">
+                    <div class="col-sm-2  vue-label">产品线代码</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.proLineId" placeholder="经营单元代码" disabled></el-input>
+                    </div>
+                    <div class="col-sm-2  vue-label">产品线名称</div>
+                    <div class="col-sm-4">
+                        <el-input v-model="dept.proLineName" placeholder="经营单元名称" disabled></el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label class="checkbox-inline">
+                            <el-checkbox v-model="checklist.chk4">是否激活</el-checkbox>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <#if shiro.hasPermission("sys:dept:update")>
+                    <div style="text-align: center"><input type="button" class="btn btn-primary" @click="saveOrUpdate"
+                                                           value="保存"/></div>
+                    </#if>
+                </div>
+            </div>
+
+
+        </form>
+
+    </div>
+
+
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/sys/deptinfo.js?_${.now?long}"></script>
+</body>
+</html>

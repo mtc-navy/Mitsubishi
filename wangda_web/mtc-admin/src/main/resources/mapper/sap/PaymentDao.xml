@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.PaymentDao">
+
+    <!-- 查询收款信息 -->
+    <select id="search" resultType="io.mtc.modules.sap.entity.PaymentEntity">
+		CALL "MTC_Get_Payment_DataSource"(#{CardCode},#{UserName},#{BPLId},N'',#{FilterValue})
+	</select>
+
+    <select id="searchInSO" resultType="io.mtc.modules.sap.entity.PaymentEntity">
+		CALL "MTC_Get_Payment_DataSource"(#{CardCode},#{UserName},#{BPLId},#{DocEntry},#{FilterValue})
+	</select>
+
+	<select id="searchInvInSO" resultType="io.mtc.modules.sap.entity.PaymentEntity">
+		CALL "MTC_Get_InvPayment_DataSource"(#{BPLId},#{DocEntry},#{FromOrder})
+	</select>
+
+    <select id="searchPayments" resultType="io.mtc.modules.sap.entity.DocEntryEntity">
+		CALL "MTC_Get_InvPayments_DocEntry"(#{DocEntry})
+	</select>
+
+	<select id="searchDesOrderReceipt" resultType="io.mtc.servicelayer.model.IncomingPayments">
+		CALL "MTC_Get_Payments_DesOrder"(#{DocEntry})
+	</select>
+
+	<select id="searchPriceOrderReceipt" resultType="io.mtc.servicelayer.model.IncomingPayments">
+		CALL "MTC_Get_Payments_PriceOrder"(#{DocEntry})
+	</select>
+
+    <select id="getSeries" resultType="java.lang.Integer">
+		CALL "MTC_Get_InvPayments_Series"(#{BPLId})
+	</select>
+
+	<select id="getDocumentSeries" resultType="java.lang.Integer">
+		CALL "MTC_Get_Document_Series"(#{BPLId},#{ObjType})
+	</select>
+
+    <update id="updatePays">
+		CALL "MTC_Update_SO_Payments"(#{DocEntry})
+    </update>
+
+	<update id="updateODLDReceipt">
+		CALL "MTC_Update_ODLD_Payments"(#{DocEntry})
+	</update>
+
+	<update id="updateOBJDReceipt">
+		CALL "MTC_Update_OBJD_Payments"(#{DocEntry})
+	</update>
+
+	<select id="selectORCTEntry" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT TO_CHAR("DocEntry") AS "DocEntry" FROM "ORCT" WHERE "DocNum"=#{DocNum}
+	</select>
+</mapper>

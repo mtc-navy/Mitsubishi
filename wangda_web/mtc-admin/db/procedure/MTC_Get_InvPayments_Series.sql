@@ -1,0 +1,25 @@
+DROP PROCEDURE "MTC_Get_InvPayments_Series";
+CREATE PROCEDURE "MTC_Get_InvPayments_Series"
+(
+  BPLId INTEGER --分支
+)
+LANGUAGE SQLSCRIPT
+AS
+BEGIN
+
+  DECLARE Series INTEGER;
+
+  SELECT T0."Series" INTO Series
+  FROM NNM1 T0
+  WHERE T0."ObjectCode" = '24' And T0."BPLId"=:BPLId LIMIT 1;
+
+  IF :Series IS NULL THEN
+  BEGIN
+    SELECT 1 INTO Series FROM DUMMY;
+  END;
+  END IF;
+
+  SELECT :Series AS "Series"
+  FROM DUMMY;
+
+END;

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>销售开票列表</title>
+    <#include "/header.html">
+</head>
+<body>
+<span id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">分支　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select clearable style="width:100%"  placeholder="请选择" v-model="search.param1" size="small">
+                        <el-option
+                                v-for="branch in salesBranches"
+                                :key="branch.bplid"
+                                :label="branch.bplname"
+                                :value="branch.bplid">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search">交货日期从</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param2"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <div class="search">至　　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param3"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <a class="btn btn-default btn-left" @click="reload(true)"><i class="fa fa-search"></i>&nbsp;查询</a>
+                <#if shiro.hasPermission("sys:invoice:batchDelivery")>
+                <a class="btn btn-primary btn-left" @click="receive">&nbsp;批量交货</a>
+                </#if>
+                <#if shiro.hasPermission("sys:invoice:batchCancelDelivery")>
+                <a class="btn btn-danger btn-left" @click="cancelReceive">&nbsp;取消交货</a>
+                </#if>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">交货状态</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select size="small" clearable v-model="search.param4" style="width: 100%;">
+                        <el-option label="未交货" value="O"></el-option>
+                        <el-option label="已交货" value="C"></el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search">开票单号　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-input size="small" style="width: 100%" v-model="search.param5"></el-input>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search">提货单号</div>
+                <div class="padding-5 col-sm-2">
+                    <el-input size="small" style="width: 100%" v-model="search.param6"></el-input>
+                </div>
+            </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <el-dialog v-show="false" title="" @opened="dialogOpened"  width="90%" :visible.sync="salesOrderForm">
+        <ul class="nav nav-tabs">
+            <li role="presentation" :class="{active:tabShow}"><a @click="showTab1" href="javascript:void(0);">内容</a></li>
+            <li role="presentation" :class="{active:!tabShow}"><a @click="showTab2" href="javascript:void(0);">常规</a></li>
+        </ul>
+        <form class="form-horizontal">
+            <div v-show="tabShow">
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">客户代码</div>
+                    <div class="col-sm-3">
+                        <el-select :disabled="true" size="small" @change="selectedCustomer" v-model="customer.code" :filter-method="filterCustomer" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="customer in remoteCustomers"
+                                    :key="customer.id"
+                                    :label="customer.id"
+                                    :value="customer.id">
+                                <span style="float: left">{{ customer.name }}</span>
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-4">
+                        <el-input
+                                size="small"
+                                v-model="customer.name"
+                                :disabled="true">
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">销售单号</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                :disabled="true"
+                                size="small"
+                                v-model="sales.docNum"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">收货人</div>
+                    <div class="col-sm-3">
+                        <el-select style="width:100%" placeholder="请选择" :disabled="true" v-model="customer.cntctPrsn" size="small" @change="selectedCntctPrsn" >
+                            <el-option
+                                    v-for="contact in contacts"
+                                    :key="contact.cntctPrsn"
+                                    :label="contact.cntctName"
+                                    :value="contact.cntctPrsn">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">联系电话</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                :disabled="true"
+                                size="small"
+                                v-model="customer.cntctPhone"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">单据日期</div>
+                    <div class="col-sm-3">
+                        <el-date-picker
+                                :disabled="true"
+                                v-model="sales.taxDate"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                style="width:100%"
+                                placeholder="选择日期" size="small" @change="changeDate">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">分支</div>
+                    <div class="col-sm-3">
+                        <el-select style="width:100%"  placeholder="请选择" :disabled="true" v-model="sales.salesBranch" size="small" @change="selectedSalesBranch" >
+                            <el-option
+                                    v-for="branch in salesBranches"
+                                    :key="branch.bplid"
+                                    :label="branch.bplname"
+                                    :value="branch.bplid">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">保价单号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.priceOrder" @clear="clearPriceOrder" clearable @change="selectedPriceOrder" :disabled="true" size="small" style="width:100%">
+                            <el-option
+                                    v-for="priceOrder in priceOrders"
+                                    :key="priceOrder.id"
+                                    :label="priceOrder.code"
+                                    :value="priceOrder.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">订料单号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.desOrder" @clear="clearDesOrder" clearable :disabled="true" @change="selectedDesOrder" size="small" style="width:100%">
+                            <el-option
+                                    v-for="desOrder in desOrders"
+                                    :key="desOrder.id"
+                                    :label="desOrder.code"
+                                    :value="desOrder.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">车牌号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.carNo" :disabled="true" @change="selectedCarNo" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="carNo in carNos"
+                                    :key="carNo.carNo"
+                                    :label="carNo.carNo"
+                                    :value="carNo.carNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">过磅单号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.boundNo" :disabled="true" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="boundNo in boundNos"
+                                    :key="boundNo.boundNo"
+                                    :label="boundNo.boundNo"
+                                    :value="boundNo.boundNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">单据状态</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                v-model="sales.docStatusName"
+                                :disabled="true"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">运输方式</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.transType" :disabled="true"  size="small" style="width:100%">
+                            <el-option label="自运" value="A"></el-option>
+                            <el-option label="代运" value="B"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">业务类型</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.busiType" :disabled="true" size="small" style="width:100%">
+                            <el-option label="工厂司机拉货" value="A"></el-option>
+                            <el-option label="客户拉货" value="B"></el-option>
+                            <el-option label="无运费" value="C"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">司机</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="customer.driver" :disabled="true" size="small" style="width:100%">
+                            <el-option
+                                    v-for="driver in drivers"
+                                    :key="driver.id"
+                                    :label="driver.code"
+                                    :value="driver.id">
+                                <span style="float: left">{{ driver.code }}</span>
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">预收款余额</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="customer.discAmt"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">可用余额</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="customer.canUseAmt"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+
+                    </div>
+                </div>
+            </div>
+            <div v-show="!tabShow">
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">制单人</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.creator"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">制单日期</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.createDate"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">制单时间</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.createTime"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">关联销售订单</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.inlineNo"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">发货单号</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.invDocNum"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">打印人</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.printor"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">打印次数</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.printNum"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">最后打印日期</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.printDate"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">最后打印时间</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                :disabled="true"
+                                v-model="sales.printTime"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+            </div>
+
+            <!--物料信息-->
+            <material-table></material-table>
+
+            <!--收款信息-->
+            <receive-discount-table></receive-discount-table>
+
+            <div class="form-group">
+                <div class="col-sm-1 control-label">备注</div>
+                <div class="col-sm-7">
+                    <el-input
+                            type="textarea"
+                            :rows="1"
+                            placeholder="请输入内容"
+                            :disabled="true"
+                            v-model="sales.remark"
+                    >
+                    </el-input>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+
+            </div>
+
+        </form>
+    </el-dialog>
+</div>
+
+<script src="${request.contextPath}/statics/libs/router.js"></script>
+<script src="${request.contextPath}/statics/js/component/materialsTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/component/receiveAndDiscountTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/delivery.js?_${.now?long}"></script>
+</body>
+
+</html>

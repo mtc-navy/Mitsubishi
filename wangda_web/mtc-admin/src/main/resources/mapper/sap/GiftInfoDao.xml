@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.GiftInfoDao">
+    <resultMap id="BaseResultMap" type="io.mtc.modules.sap.entity.GiftInfoEntity">
+        <id column="Code" jdbcType="NVARCHAR" property="code"/>
+        <result column="Name" jdbcType="NVARCHAR" property="name"/>
+        <result column="U_DItemCode" jdbcType="NVARCHAR" property="uDitemcode"/>
+        <result column="U_DItemName" jdbcType="NVARCHAR" property="uDitemname"/>
+        <result column="U_DocEntry" jdbcType="INTEGER" property="uDocentry"/>
+        <result column="U_DiscKG" jdbcType="DECIMAL" property="uDisckg"/>
+        <result column="U_DiscPKG" jdbcType="INTEGER" property="uDiscpkg"/>
+        <result column="U_DiscAmt" jdbcType="DECIMAL" property="uDiscamt"/>
+        <result column="U_DocNum" jdbcType="NVARCHAR" property="uDocnum"/>
+        <result column="U_SODocEntry" jdbcType="INTEGER" property="uSodocentry"/>
+        <result column="U_ItemCode" jdbcType="NVARCHAR" property="uItemcode"/>
+        <result column="U_ItemName" jdbcType="NVARCHAR" property="uItemname"/>
+        <result column="U_DiscOrder" jdbcType="NVARCHAR" property="uDiscorder"/>
+        <result column="U_ObjType" jdbcType="NVARCHAR" property="uObjtype"/>
+        <result column="U_Remark" jdbcType="NVARCHAR" property="uRemark"/>
+        <result column="U_TrsNumber" jdbcType="INTEGER" property="uTrsnumber"/>
+        <result column="U_ZKItemCode" jdbcType="NVARCHAR" property="uZkitemcode"/>
+        <result column="U_ZKItemName" jdbcType="NVARCHAR" property="uZkitemname"/>
+        <result column="U_Qty" jdbcType="DECIMAL" property="uQty"/>
+        <result column="U_ReturnEntry" jdbcType="INTEGER" property="uReturnentry"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        "Code", "Name", "U_DItemCode", "U_DItemName", "U_DocEntry", "U_DiscKG", "U_DiscPKG",
+        "U_DiscAmt", "U_DocNum", "U_SODocEntry", "U_ItemCode", "U_ItemName", "U_DiscOrder",
+        "U_ObjType", "U_Remark", "U_TrsNumber", "U_ZKItemCode", "U_ZKItemName", "U_Qty",
+        "U_ReturnEntry"
+    </sql>
+    <delete id="deleteByDocEntry">
+        delete from "@U_RDR2"
+        where "U_DocEntry" = #{DocEntry} AND "U_ObjType"='ORDR'
+    </delete>
+    <insert id="insert" parameterType="io.mtc.modules.sap.entity.GiftInfoEntity">
+        insert into "@U_RDR2" ("Code", "Name", "U_DItemCode",
+        "U_DItemName", "U_DocEntry", "U_DiscKG",
+        "U_DiscPKG", "U_DiscAmt", "U_DocNum",
+        "U_SODocEntry", "U_ItemCode", "U_ItemName",
+        "U_DiscOrder", "U_ObjType", "U_Remark",
+        "U_TrsNumber", "U_ZKItemCode", "U_ZKItemName",
+        "U_Qty", "U_ReturnEntry")
+        values (RDR2_SEQ.NEXTVAL, RDR2_SEQ.NEXTVAL, #{uDitemcode,jdbcType=NVARCHAR},
+        #{uDitemname,jdbcType=NVARCHAR}, #{uDocentry,jdbcType=INTEGER}, #{uDisckg,jdbcType=DECIMAL},
+        #{uDiscpkg,jdbcType=INTEGER}, #{uDiscamt,jdbcType=DECIMAL}, #{uDocnum,jdbcType=NVARCHAR},
+        #{uSodocentry,jdbcType=INTEGER}, #{uItemcode,jdbcType=NVARCHAR}, #{uItemname,jdbcType=NVARCHAR},
+        #{uDiscorder,jdbcType=NVARCHAR}, #{uObjtype,jdbcType=NVARCHAR}, #{uRemark,jdbcType=NVARCHAR},
+        #{uTrsnumber,jdbcType=INTEGER}, #{uZkitemcode,jdbcType=NVARCHAR}, #{uZkitemname,jdbcType=NVARCHAR},
+        #{uQty,jdbcType=DECIMAL}, #{uReturnentry,jdbcType=INTEGER})
+    </insert>
+    <select id="selectByDocEntry" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from "@U_RDR2"
+        where "U_DocEntry" = #{DocEntry} AND "U_ObjType"='ORDR'
+    </select>
+    <select id="selectInfoForReturns" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from "@U_RDR2"
+        where "U_DocEntry" = #{DocEntry} AND "U_ObjType"='ORDN'
+    </select>
+</mapper>

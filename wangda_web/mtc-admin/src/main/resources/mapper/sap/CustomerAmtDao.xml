@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.CustomerAmtDao">
+
+    <select id="search" resultType="io.mtc.modules.sap.entity.CustomerAmtEntity">
+		CALL "MTC_Get_CustomerAmt"(#{BPLId},#{CardCode})
+	</select>
+
+    <select id="searchOther" resultType="io.mtc.modules.sap.entity.CustomerAmtEntity">
+		CALL "MTC_Get_CustomerAmt"(#{BPLId},#{CardCode},${DocEntry})
+	</select>
+</mapper>

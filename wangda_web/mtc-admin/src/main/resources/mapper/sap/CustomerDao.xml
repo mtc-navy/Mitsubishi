@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.CustomerDao">
+
+    <!-- 根据用户名，查询相应权限的客户 -->
+    <select id="getCustomerList" resultType="io.mtc.modules.sap.entity.CustomerEntity">
+		CALL "MTC_Get_Customer_DataSource"(#{UserName},#{DataType},#{FilterValue})
+	</select>
+
+    <select id="getPrintType" resultType="io.mtc.modules.sap.entity.PrintTypeEntity">
+		CALL "MTC_Get_SO_PrintType"(#{DocEntry})
+	</select>
+</mapper>

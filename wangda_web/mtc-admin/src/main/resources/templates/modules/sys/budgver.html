@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>预算版本</title>
+
+    <#include "/header.html">
+
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-7">
+                <div class="search-vue">预算代码</div>
+                <div class="col-sm-3 vue-label"> <input type="text" class="form-control" v-model="q.code" @keyup.enter="query" placeholder="预算代码"></div>
+                <div class="search-vue">预算名称</div>
+                <div class="col-sm-3 vue-label">  <input type="text" class="form-control" v-model="q.name" @keyup.enter="query" placeholder="预算名称"></div>
+                <div class="search-vue">年度</div>
+                <div class="col-sm-3 vue-label">   <input type="text" class="form-control" v-model="q.year" @keyup.enter="query" placeholder="年度"></div>
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+			<#if shiro.hasPermission("sys:budgver:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("sys:budgver:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-2 vue-label">预算代码</div>
+                <div class="col-sm-4">
+                    <el-input v-model="info.vercode" placeholder="预算代码"  ></el-input>
+                </div>
+                <div class="col-sm-2 vue-label">基于预算</div>
+                <div class="col-sm-4">
+                    <el-select v-model="info.basever" filterable  placeholder="基于预算" style="width:100%" >
+                        <el-option
+                                v-for="item in Baseveroptions"
+                                :key="item.docentry"
+                                :label="item.vername"
+                                :value="item.docentry">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 vue-label">预算名称</div>
+                <div class="col-sm-4">
+                    <el-input v-model="info.vername" placeholder="预算名称"  ></el-input>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 vue-label">预算年度</div>
+                <div class="col-sm-4">
+                    <el-date-picker
+                            v-model="tempYear"
+                            type="year"
+                            placeholder="选择年"
+                            style="width:100%"
+                            >
+                    </el-date-picker>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 vue-label">
+                        <el-checkbox v-model="check">是否激活</el-checkbox>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div style="text-align: center">
+                    <input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+                    &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+<!-----用来计算单元格内容实际长度的--------->
+<div id="gridWidth"></div>
+<!-----用来计算单元格内容实际长度的--------->
+<script src="${request.contextPath}/statics/js/component/publicjggrid.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/budgver.js?_${.now?long}"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.ItemDao">
+
+    <resultMap id="item" type="io.mtc.modules.sap.entity.ItemEntity">
+        <result property="itemCode" column="ItemCode"/>
+        <result property="itemName" column="ItemName"/>
+        <result property="factPrice" column="FactPrice"/>
+        <result property="currDisc" column="CurrDisc"/>
+        <result property="isGiveGD" column="IsGiveGD"/>
+        <result property="whsCode" column="WhsCode"/>
+        <result property="whsName" column="WhsName"/>
+        <result property="isPackage" column="IsPackage"/>
+        <result property="salFactor1" column="SalFactor1"/>
+        <result property="ableQty" column="AbleQty"/>
+        <result property="useQty" column="UseQty"/>
+    </resultMap>
+
+    <!-- 查询物料信息 -->
+    <select id="search" resultMap="item">
+		CALL "MTC_Get_ItemList_DataSource"(#{CardCode},#{UserName},#{BPLId},'',#{docDate},#{desOrder},#{priceOrder})
+	</select>
+
+    <!-- 根据仓库得到有库存的可销清单 -->
+    <select id="searchByWhs" resultType="io.mtc.modules.sap.entity.ItemEntity">
+		CALL "MTC_Get_ItemList_ByWhs"(#{WhsCode},#{UserName})
+    </select>
+
+    <!-- 得到单个物料信息 -->
+    <select id="info" resultType="io.mtc.modules.sap.entity.ItemEntity">
+        SELECT T0."ItemCode", T0."ItemName", T0."Spec", T0."SalFactor1", T0."SalFactor2",
+          T0."U_IsStdPack" AS "IsPackage", T1."OnHand" AS "Stock"
+        FROM OITM T0
+        INNER JOIN OITW T1 ON T1."ItemCode"=T0."ItemCode" AND T1."WhsCode"=#{WhsCode}
+        WHERE T0."ItemCode"=#{ItemCode}
+    </select>
+
+</mapper>

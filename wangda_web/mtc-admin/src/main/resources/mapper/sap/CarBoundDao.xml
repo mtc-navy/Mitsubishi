@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.CarBoundDao">
+
+    <!-- 获取车牌号 -->
+    <select id="getCarNoList" resultType="io.mtc.modules.sap.entity.CarNoEntity">
+			CALL "MTC_Get_CurBoundCarNo"(#{CardCode},#{CarNo},#{TaxDate},#{BPLId})
+	</select>
+
+    <!-- 获取过磅单号 -->
+    <select id="getBoundNoList" resultType="io.mtc.modules.sap.entity.BoundNoEntity">
+		CALL "MTC_Get_CarBoundNo"(#{CardCode},#{CarNo},#{TaxDate})
+	</select>
+
+</mapper>

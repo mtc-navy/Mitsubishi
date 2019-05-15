@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>销售开票列表</title>
+    <#include "/header.html">
+</head>
+<body>
+<span id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">分支　　　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select clearable style="width:100%"  placeholder="请选择" v-model="search.param1" size="small">
+                        <el-option
+                                v-for="branch in salesBranches"
+                                :key="branch.bplid"
+                                :label="branch.bplname"
+                                :value="branch.bplid">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search">过账日期从</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param2"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <div class="search">至</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param3"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <a class="btn btn-default btn-left" @click="reload(true)"><i class="fa fa-search"></i>&nbsp;查询</a>
+                <#if shiro.hasPermission("sys:invoice:batchRec")>
+                <a class="btn btn-primary btn-left" @click="receive">&nbsp;确认收款</a>
+                </#if>
+                <#if shiro.hasPermission("sys:invoice:batchCancelRec")>
+                <a class="btn btn-danger btn-left" @click="cancelReceive">&nbsp;取消收款</a>
+                </#if>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">销售开票单号</div>
+                <div class="padding-5 col-sm-2">
+                    <el-input size="small" style="width: 100%" v-model="search.param4"></el-input>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search">提货单号　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-input size="small" style="width: 100%" v-model="search.param6"></el-input>
+                </div>
+            </div>
+            <div class="form-group-5">
+                <div class="search"><el-checkbox checked="true" true-label="Y" false-label="N" v-model="search.param5">待收款开票单</el-checkbox></div>
+                <div class="padding-5 col-sm-2">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="padding-5 col-sm-10">
+            </div>
+             <div class="padding-5 col-sm-2" style="text-align: right">
+                 合计:{{total}}
+            </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/libs/router.js"></script>
+<script src="${request.contextPath}/statics/js/component/materialsTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/component/presentMaterials.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/component/receiveAndDiscountTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/batchReceipt.js?_${.now?long}"></script>
+</body>
+
+</html>

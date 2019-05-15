@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.mtc.modules.sys.dao.SysDeptDao">
+
+    <resultMap id="dept" type="io.mtc.modules.sys.entity.SysDeptEntity">
+        <result column="DEPTCODE" property="deptCode"/>
+        <result column="NAME" property="name"/>
+        <result column="FatherId" property="parentCode"/>
+        <result column="TYPE" property="type"/>
+        <result column="DEPT_TYPE" property="deptType"/>
+        <result column="CLASSCODE" property="classCode"/>
+        <result column="COMPARECODE" property="comareId"/>
+        <result column="COMPARENAME" property="comareName"/>
+        <result column="BUSUNITCODE" property="busDeptId"/>
+        <result column="BUSUNITNAME" property="busDeptName"/>
+        <result column="PROLINECODE" property="proLineId"/>
+        <result column="PROLINNAME" property="proLineName"/>
+        <result column="HRID" property="hrid"/>
+    </resultMap>
+
+    <resultMap id="tree" type="io.mtc.modules.sap.entity.BudgetOrgTreeEntity">
+        <result property="docEntry" column="DOCENTRY"/>
+        <result property="code" column="CODE"/>
+        <result property="parentCode" column="PARENT_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="companyCode" column="CompanyCode"/>
+        <result property="deptCode" column="DeptCode"/>
+        <result property="buziCode" column="BuziCode"/>
+        <result property="saleCode" column="SaleCode"/>
+        <result property="type" column="TYPE"/>
+        <result property="typeName" column="TypeName"/>
+    </resultMap>
+
+    <select id="queryDetpIdList" resultType="long">
+		select dept_id from sys_dept where parent_id = #{value} and del_flag = 0
+	</select>
+
+    <select id="queryDeptFromSap" resultType="io.mtc.modules.sys.dao.SysDeptDao" resultMap="dept">
+		call "MTC_BUD_GetDeptFromSAP"('')
+	</select>
+
+    <select id="queryBudgetOrgTree" resultMap="tree">
+		call "MTC_BUD_GetOrgTreeByUsrPwr"(#{userCode},#{orgLevel},#{fitSale})
+	</select>
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.WarehouseDao">
+    <!--根据分支得到成品仓库-->
+    <select id="searchCPByBPL" resultType="io.mtc.modules.sap.entity.WarehouseEntity">
+		SELECT T0."WhsCode", T0."WhsName", T0."U_ShortName" AS "ShortName",T0."BPLid", T0."U_U_CIOTY1", T0."U_U_CIOTY2"
+		FROM OWHS T0
+		WHERE (IFNULL(#{BPLId},'')='' OR TO_CHAR(T0."BPLid")=#{BPLId}) --AND LEFT(RIGHT(T0."WhsCode",4),1)='4'
+		AND (#{FilterValue}='' OR T0."WhsName" LIKE #{FilterValue})
+		ORDER BY T0."WhsName"
+	</select>
+
+    <!--根据分支得到办事处仓库-->
+    <select id="searchBSCByBPL" resultType="io.mtc.modules.sap.entity.WarehouseEntity">
+		SELECT T0."WhsCode", T0."WhsName", T0."U_ShortName" AS "ShortName", T0."BPLid", T0."U_U_CIOTY1", T0."U_U_CIOTY2"
+		FROM OWHS T0
+		WHERE (IFNULL(#{BPLId},'')='' OR TO_CHAR(T0."BPLid")=#{BPLId}) --AND LEFT(RIGHT(T0."WhsCode",4),1)='7'
+		AND (#{FilterValue}='' OR T0."WhsName" LIKE #{FilterValue})
+		ORDER BY T0."WhsName"
+	</select>
+
+    <!--根据用户得到所有仓库-->
+    <select id="searchByUser" resultType="io.mtc.modules.sap.entity.WarehouseEntity">
+		SELECT T0."WhsCode", T0."WhsName", T0."U_ShortName" AS "ShortName", T0."BPLid", T0."U_U_CIOTY1", T0."U_U_CIOTY2"
+		FROM OWHS T0
+		INNER JOIN USR6 T1 ON T1."BPLId"=T0."BPLid"
+		WHERE T1."UserCode"=#{UserName} AND T0."BPLid"=#{BPLId}
+		AND (#{FilterValue}='' OR T0."WhsName" LIKE #{FilterValue})
+		ORDER BY T0."WhsName"
+	</select>
+
+	<!--根据用户得到办事处和成品仓库-->
+	<select id="searchCBByUser" resultType="io.mtc.modules.sap.entity.WarehouseEntity">
+		SELECT T0."WhsCode", T0."WhsName", T0."U_ShortName" AS "ShortName", T0."BPLid", T0."U_U_CIOTY1", T0."U_U_CIOTY2"
+		FROM OWHS T0
+		INNER JOIN USR6 T1 ON T1."BPLId"=T0."BPLid"
+		WHERE T1."UserCode"=#{UserName} AND T0."BPLid"=#{BPLId}
+		--AND (LEFT(RIGHT(T0."WhsCode",3),1)='4' OR LEFT(RIGHT(T0."WhsCode",3),1)='7')
+		AND (#{FilterValue}='' OR T0."WhsName" LIKE #{FilterValue})
+		ORDER BY T0."WhsName"
+	</select>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.StockTransferDao">
+
+    <!-- 查询转储信息 -->
+    <select id="queryList" parameterType="map" resultType="io.mtc.modules.sap.entity.StockTransferEntity">
+        <![CDATA[
+        SELECT * FROM "MTC_V_StockTransfer"
+        WHERE (IFNULL(#{DocStatus},'')='' OR "DocStatus"=#{DocStatus})
+        AND ((IFNULL(#{StartDate},'')='' OR "TaxDate">=#{StartDate}) AND (IFNULL(#{EndDate},'')='' OR "TaxDate"<=#{EndDate}))
+        AND "BPLId" IN (SELECT "BPLId" FROM "USR6" WHERE "UserCode"=#{UserName})
+        AND (IFNULL(#{BPLId},'')='' OR TO_CHAR("BPLId")=#{BPLId})
+        AND (IFNULL(#{FromWhsCode},'')='' OR "FromWhsCode"=#{FromWhsCode})
+        AND (IFNULL(#{ToWhsCode},'')='' OR "ToWhsCode"=#{ToWhsCode})
+        ORDER BY "TaxDate" DESC
+        ]]>
+    </select>
+
+    <!-- 查询转储单主信息 -->
+    <select id="searchMaster" resultType="io.mtc.modules.sap.dto.StockTransferDto">
+        SELECT *,'T' AS "TransferType","U_Driver" AS "Driver","U_TranType" AS "TranType","U_BusiType" AS "BusiType",
+        "U_CarNo" AS "CarNo","U_WORDREntry" AS "BoundNo"
+        FROM OWTR WHERE "DocEntry"=#{DocEntry}
+    </select>
+
+    <!-- 查询转储单明细信息 -->
+    <select id="searchDetail" resultType="io.mtc.modules.sap.dto.StockTransferDto$LineInfo">
+        SELECT T0."ItemCode", T1."ItemName", T1."Spec", T0."Quantity", T1."SalFactor1",T0."WhsCode" AS "WarehouseCode",T0."FromWhsCod" AS "FromWarehouseCode",
+          T1."U_IsStdPack" AS "IsPackage", T1."SalFactor1", T1."SalFactor2", T2."OnHand" AS "Stock",
+          T0."Factor1", T0."Factor2"
+        FROM WTR1 T0
+        LEFT JOIN OITM T1 ON T1."ItemCode"=T0."ItemCode"
+        LEFT JOIN OITW T2 ON T2."ItemCode"=T0."ItemCode" AND T2."WhsCode"=#{WhsCode}
+        WHERE T0."DocEntry"=#{DocEntry}
+    </select>
+
+    <!-- 查询转储申请单主信息 -->
+    <select id="searchReqMaster" resultType="io.mtc.modules.sap.dto.StockTransferDto">
+        SELECT
+          *,'R' AS "TransferType","U_Driver" AS "Driver","U_TranType" AS "TranType","U_BusiType" AS "BusiType",
+          "U_CarNo" AS "CarNo","U_WORDREntry" AS "BoundNo"
+        FROM OWTQ WHERE "DocEntry"=#{DocEntry}
+    </select>
+
+    <!-- 查询转储申请单明细信息 -->
+    <select id="searchReqDetail" resultType="io.mtc.modules.sap.dto.StockTransferDto$LineInfo">
+        SELECT T0."ItemCode", T1."ItemName", T1."Spec", T0."Quantity", T1."SalFactor1",T0."WhsCode" AS "WarehouseCode",T0."FromWhsCod" AS "FromWarehouseCode",
+          T1."U_IsStdPack" AS "IsPackage", T1."SalFactor1", T1."SalFactor2", T2."OnHand" AS "Stock",
+          T0."Factor1", T0."Factor2"
+        FROM WTQ1 T0
+        LEFT JOIN OITM T1 ON T1."ItemCode"=T0."ItemCode"
+        LEFT JOIN OITW T2 ON T2."ItemCode"=T0."ItemCode" AND T2."WhsCode"=#{WhsCode}
+        WHERE T0."DocEntry"=#{DocEntry}
+    </select>
+
+</mapper>

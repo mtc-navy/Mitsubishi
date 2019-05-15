@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>销售退货列表</title>
+    <#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="row">
+            <div class="form-group">
+                <div class="search">客户　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select size="small" clearable @change="selectedCustomerSearch" v-model="customer.code" :filter-method="filterCustomer" filterable style="width:100%">
+                        <el-option
+                                v-for="customer in remoteCustomers"
+                                :key="customer.id"
+                                :label="customer.id"
+                                :value="customer.id">
+                            <span style="float: left">{{ customer.name }}</span>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="search">单据日期</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.StartDate"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <div class="search">至</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.EndDate"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+            </div>
+            <a class="btn btn-default btn-left" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+            <#if shiro.hasPermission("sys:return:save")>
+            <a class="btn btn-primary btn-left" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+            </#if>
+            <span style="display: none">
+            <#if shiro.hasPermission("sys:return:update")>
+            {{showButton.edit=true}}
+            </#if>
+            </span>
+        </div>
+        <div class="row">
+            <div class="search">单据状态</div>
+            <div class="padding-5 col-sm-2">
+                <el-select size="small" clearable v-model="search.DocStatus" style="width: 100%;">
+                    <el-option label="已结算" value="D"></el-option>
+                    <el-option label="已取消" value="C"></el-option>
+                </el-select>
+            </div>
+            <div class="form-group-5">
+                <div class="search">交货单号</div>
+                <div class="padding-5 col-sm-2">
+                    <el-input size="small" style="width: 100%" v-model="search.DeliveryNum"></el-input>
+                </div>
+            </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group" style="height:10px">
+                <div class="col-sm-8">{{title}}</div>
+                <div class="col-sm-4" style="margin-top: -9px;">
+                    <#if shiro.hasPermission("sys:return:print")>
+                        <a class="btn btn-default" @click="print" v-show="showButton.print" style="float: right">打印</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:return:cancel")>
+                    <a class="btn btn-default" @click="cancelOrder" v-show="showButton.cancelOrder" style="float: right">取消</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:return:save")>
+                        <a class="btn btn-default" @click="add" v-show="showButton.add" style="float: right">新增</a>
+                    </#if>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs">
+            <li role="presentation" :class="{active:tabShow}"><a @click="showTab1" href="javascript:void(0);">内容</a></li>
+        </ul>
+        <form class="form-horizontal">
+            <div v-show="tabShow">
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">客户代码</div>
+                    <div class="col-sm-3">
+                        <el-select :disabled="readonly.cardCode || readonly.all" size="small" @change="selectedCustomer" v-model="customer.code" :filter-method="filterCustomer" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="customer in remoteCustomers"
+                                    :key="customer.id"
+                                    :label="customer.id"
+                                    :value="customer.id">
+                                <span style="float: left">{{ customer.name }}</span>
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-4">
+                        <el-input
+                                size="small"
+                                v-model="customer.name"
+                                :disabled="true">
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">单据编号</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                :disabled="true"
+                                size="small"
+                                v-model="sales.docNum"
+                        >
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">收货人</div>
+                    <div class="col-sm-3">
+                        <el-select style="width:100%" :disabled="readonly.all" placeholder="请选择" v-model="customer.cntctPrsn" size="small">
+                            <el-option
+                                    v-for="contact in contacts"
+                                    :key="contact.cntctPrsn"
+                                    :label="contact.cntctName"
+                                    :value="contact.cntctPrsn">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">单据状态</div>
+                    <div class="col-sm-3">
+                        <el-input
+                                size="small"
+                                v-model="sales.docStatusName"
+                                :disabled="true"
+                        >
+                        </el-input>
+                    </div>
+                    <div class="col-sm-1 control-label">单据日期</div>
+                    <div class="col-sm-3">
+                        <el-date-picker
+                                :disabled="readonly.all"
+                                v-model="sales.taxDate"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                style="width:100%"
+                                placeholder="选择日期" size="small" @change="calcAllMaterials">
+                        </el-date-picker>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">运输方式</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.transType" placeholder="请选择" :disabled="readonly.all" size="small" style="width:100%">
+                            <el-option label="自运" value="A"></el-option>
+                            <el-option label="代运" value="B"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">业务类型</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.busiType" placeholder="请选择" :disabled="readonly.all" size="small" style="width:100%">
+                            <el-option label="工厂司机拉货" value="A"></el-option>
+                            <el-option label="客户拉货" value="B"></el-option>
+                            <el-option label="无运费" value="C"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">司机</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="customer.driver" placeholder="请选择" :disabled="readonly.all" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="driver in drivers"
+                                    :key="driver.id"
+                                    :label="driver.code"
+                                    :value="driver.id">
+                                <span style="float: left">{{ driver.code }}</span>
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-3">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">销售分支</div>
+                    <div class="col-sm-3">
+                        <el-select style="width:100%"  placeholder="请选择" :disabled="readonly.salesBranch || readonly.all" v-model="sales.salesBranch" size="small" @change="selectedSalesBranch" >
+                            <el-option
+                                    v-for="branch in salesBranches"
+                                    :key="branch.bplid"
+                                    :label="branch.bplname"
+                                    :value="branch.bplid">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">交货订单</div>
+                    <div class="col-sm-3">
+                        <el-select size="small" :disabled="readonly.all" clearable  @clear="clearOrder"  v-model="sales.srcEntry" @change="selectedSalesOrder" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="order in remoteSalesOrderCopy"
+                                    :key="order.id"
+                                    :label="order.code"
+                                    :value="order.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-1 control-label">车牌号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.carNo" :disabled="readonly.all" @change="selectedCarNo" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="carNo in carNos"
+                                    :key="carNo.carNo"
+                                    :label="carNo.carNo"
+                                    :value="carNo.carNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label">过磅单号</div>
+                    <div class="col-sm-3">
+                        <el-select v-model="sales.boundNo" :disabled="readonly.all" filterable size="small" style="width:100%">
+                            <el-option
+                                    v-for="boundNo in boundNos"
+                                    :key="boundNo.boundNo"
+                                    :label="boundNo.boundNo"
+                                    :value="boundNo.boundNo">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-sm-1 control-label"></div>
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+            </div>
+            <!--物料信息-->
+            <material-table doctype="return"></material-table>
+            <div class="form-group" style="padding-bottom: 4px">
+                <a class="btn btn-default" v-show="showButton.addMaterial" @click="addMaterial" style="">新增物料</a>
+            </div>
+
+
+            <div class="form-group" style="padding: 5px 0 10px 0">
+                <div class="col-sm-1" style="width: 3%;"></div>
+                <span v-show="showButton.save">
+                   <input type="button" class="btn btn-primary"  @click="saveOrUpdate" value="保存"/> &nbsp;&nbsp;
+                </span>
+                <input type="button" class="btn btn-warning" @click="back" value="返回"/> &nbsp;&nbsp;
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script type="text/html" id="chooseMaterial">
+    <input type="text" lay-event="click" autocomplete="off"
+           {{#  if(typeof(d.itemCode) !="undefined"){ }}
+           value="{{d.itemCode}}"
+           {{#  } }}
+           placeholder="" class="layui-input table-edit tags">
+</script>
+
+<script type="text/html" id="warehouse">
+   <select id="warehouse_{{d.LAY_TABLE_INDEX}}" lay-event="warehouse" class="warehouse" lay-ignore style="width: 100%;padding: 0px;">
+   </select>
+</script>
+
+<script>
+    var materialsCols =[[
+        ,{title: '序号',type:'numbers',templet:'#chooseMaterial'}
+        ,{field: 'itemCode', width:90,title: '物料代码',templet:'#chooseMaterial',totalRowText:'合计'}
+        ,{field: 'itemName',width:225, title: '物料名称',style:'background-color:#eee'}
+        ,{field: 'num', width:this.doctype=='return'?100:70,title: '包数',edit: 'text',totalRow:true}
+        ,{field: 'salFactor1', title: '单包重',style:'background-color:#eee'}
+        ,{field: 'kg',width:this.doctype=='return'?100:90, title: '(数量)KG',edit: 'text',totalRow:true}
+        ,{field: 'warehouseCode', width:130,title: '仓库',templet:'#warehouse',totalRowText:'合计'}
+        ,{field: 'factPrice', title: '单价',style:'background-color:#eee'}
+        ,{field: 'amount',width:this.doctype=='return'?140:90, title: '金额',style:'background-color:#eee',totalRow:true}
+        ,{field: 'currDisc',width:115, title: '每包折扣金额',style:'background-color:#eee'}
+        ,{field: 'totalDisc',width:100, title: '折扣总金额',style:'background-color:#eee',totalRow:true}
+        ,{field: 'factPrice',title: '出厂价',style:'background-color:#eee',hide:true}
+        ,{fixed: 'right',width:80,title:'操作',align:'center',toolbar: '#barDemo'}
+    ]];
+
+    var materialsEditCols =[[
+        ,{title: '序号',type:'numbers',templet:'#chooseMaterial'}
+        ,{field: 'itemCode', width:100,title: '物料代码',totalRowText:'合计',style:'background-color:#eee'}
+        ,{field: 'itemName',width:225, title: '物料名称',style:'background-color:#eee'}
+        ,{field: 'num', width:this.doctype=='return'?100:70,title: '包数',totalRow:true,style:'background-color:#eee'}
+        ,{field: 'salFactor1', title: '单包重',style:'background-color:#eee'}
+        ,{field: 'kg',width:this.doctype=='return'?100:90, title: '(数量)KG',totalRow:true,style:'background-color:#eee'}
+        ,{field: 'warehouseName', width:130,title: '仓库',totalRowText:'合计',style:'background-color:#eee'}
+        ,{field: 'factPrice', title: '单价',style:'background-color:#eee'}
+        ,{field: 'amount',width:this.doctype=='return'?140:90, title: '金额',style:'background-color:#eee',totalRow:true}
+        ,{field: 'factPrice',title: '出厂价',style:'background-color:#eee',hide:true}
+    ]];
+</script>
+<script src="${request.contextPath}/statics/js/component/materialsTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sys/return.js?_${.now?long}"></script>
+</body>
+</html>

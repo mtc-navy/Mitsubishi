@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.CntcnPrsnDao">
+
+    <!-- 根据客户编码查询对应的联系人信息 -->
+    <select id="search" resultType="io.mtc.modules.sap.entity.CntctPrsnEntity">
+		CALL "MTC_Get_CntctPrsn_DataSource"(#{CardCode},#{UserName},#{FilterValue})
+	</select>
+
+</mapper>

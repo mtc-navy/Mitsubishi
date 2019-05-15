@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.mapper.DocEntryMapper">
+    <!-- 获取订料单最新DocEntry -->
+    <select id="getDesOrderDocEntry" resultType="java.lang.Integer">
+		SELECT MTC_SD_ODLD_SEQ.NEXTVAL FROM DUMMY
+	</select>
+
+    <!-- 获取保价单最新DocEntry -->
+    <select id="getPriceOrderDocEntry" resultType="java.lang.Integer">
+		SELECT MTC_SD_OBJD_SEQ.NEXTVAL FROM DUMMY
+    </select>
+
+</mapper>

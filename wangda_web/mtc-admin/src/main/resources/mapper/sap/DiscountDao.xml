@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.DiscountDao">
+
+    <!-- 查询折扣信息 -->
+    <select id="search" resultType="io.mtc.modules.sap.entity.DiscountEntity">
+		CALL "MTC_Get_Discount_DataSource"(#{CardCode},#{UserName},#{BPLId},N'',#{FilterValue})
+	</select>
+
+    <select id="searchInSO" resultType="io.mtc.modules.sap.entity.DiscountEntity">
+		CALL "MTC_Get_Discount_DataSource"(#{CardCode},#{UserName},#{BPLId},#{DocEntry},#{FilterValue})
+	</select>
+
+	<select id="searchInvInSO" resultType="io.mtc.modules.sap.entity.DiscountEntity">
+		CALL "MTC_Get_InvDiscount_DataSource"(#{CardCode},#{BPLId},#{DocEntry},#{FromOrder})
+	</select>
+
+    <select id="getGiftAmt" resultType="io.mtc.modules.sap.entity.GiftAmtEntity">
+		CALL "U_PD_GetGiftAmt"(#{ObjType},#{BPLId},#{DocEntry},#{CardCode},#{DocDate},#{ListItems})
+	</select>
+
+    <select id="getSODiscType" resultType="io.mtc.modules.sap.entity.DiscTypeInfoEntity">
+		 <![CDATA[
+		SELECT
+		T0."U_IsTprice" AS "UIsTprice",
+		T0."DocEntry",
+		T0."U_ItemCode" AS "UItemCode",
+		IFNULL(T0."U_DiscBase",0) AS "UDiscBase",
+		IFNULL(T0."U_DiscNum",0) AS "UDiscNum",
+		T0."U_DItemCode" AS "UDItemCode",
+		IFNULL(T0."U_DiscBase2",0) AS "UDiscBase2",
+		IFNULL(T0."U_DiscNum2",0) AS "UDiscNum2",
+		IFNULL(I0."SalFactor1",0) AS "SalFactor1"
+		FROM "@U_SDSR1" T0
+		LEFT JOIN "OITM" I0 ON I0."ItemCode"=T0."U_DItemCode"
+		WHERE T0."DocEntry" IN(SELECT "DocEntry"
+		FROM "@U_SODSR"
+		WHERE "U_BDiscFlag"=3 AND "U_CardCode"=#{CardCode}
+		AND "U_Status"=4 AND "U_BPLId"=#{BPLId})
+		AND #{DocDate}>=T0."U_EfDtFrom" AND #{DocDate}<=T0."U_EfDtTo"
+		AND T0."U_DiscType" = 3
+        ]]>
+	</select>
+
+    <select id="getItemGrpFac" resultType="io.mtc.modules.sap.entity.ItemFacEntity">
+		<![CDATA[
+	    SELECT
+          "U_ItemCode" AS "ItemCode",
+          t1."SalFactor1"
+        FROM "@U_ITEMS1" I1
+        JOIN "@U_ITEMS" I0 ON I0."DocEntry" = I1."DocEntry"
+        JOIN "OITM" t1 ON t1."ItemCode"=I1."U_ItemCode"
+        WHERE I0."U_Code"=#{ItemCode} AND I0."U_BPLId"=#{BPLId}
+        GROUP BY "U_ItemCode",t1."SalFactor1"
+        UNION ALL
+        SELECT "ItemCode" "U_ItemCode", "SalFactor1"
+        FROM "OITM"
+        WHERE "ItemCode"=#{ItemCode}
+        ]]>
+	</select>
+
+    <select id="getMaxAmt" resultType="java.math.BigDecimal">
+		SELECT "U_MaxAmount" FROM "@U_SODSR" WHERE "DocEntry"=#{DocEntry}
+	</select>
+
+    <select id="checkMaxGiftAmt" resultType="io.mtc.modules.sap.entity.DiscMaxAmtEntity">
+		CALL "U_PD_Check_MaxGiftAmt"(#{DocEntry},#{DiscEntry},#{ItemCode})
+	</select>
+
+    <select id="getGiftPackage" resultMap="GiftPackageResultMap">
+		CALL "U_PD_GetGiftPackage"(#{DocEntry},#{BPLId},#{ZKDocEntry},#{ZKItemCode},#{PKG},#{KG},#{ListItems},#{DiscItems})
+	</select>
+
+    <resultMap id="GiftPackageResultMap" type="io.mtc.modules.sap.entity.GiftPackageEntity">
+        <result column="TYPE" jdbcType="NVARCHAR" property="type"/>
+        <result column="U_ItemCode" jdbcType="NVARCHAR" property="itemCode"/>
+        <result column="DiscNum" jdbcType="DECIMAL" property="discNum"/>
+        <result column="U_DItemCode" jdbcType="NVARCHAR" property="dItemCode"/>
+    </resultMap>
+
+    <select id="getSalFactor1" resultType="java.math.BigDecimal">
+		SELECT "SalFactor1" FROM "OITM" WHERE "ItemCode"=#{ItemCode}
+	</select>
+
+    <select id="checkMaxGift" resultType="java.math.BigDecimal">
+		CALL "U_PD_Check_MaxGift"(#{DocEntry},#{ZKDocEntry},#{ListItems},0,?)
+	</select>
+
+	<select id="getItemName" resultType="java.lang.String">
+		SELECT "ItemName" FROM "OITM" WHERE "ItemCode"=#{ItemCode}
+	</select>
+</mapper>

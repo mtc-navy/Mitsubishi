@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>销售订料</title>
+    <#include "/header.html">
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">单据编号</div>
+                <div class="padding-5 col-sm-2 padding-right-5">
+                    <el-input size="small" style="width: 100%" v-model="search.param1"></el-input>
+                </div>
+                <div class="search">客　　户　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select size="small" clearable v-model="search.param2" :filter-method="filterCustomer" filterable style="width:100%">
+                        <el-option
+                                v-for="customer in remoteCustomers"
+                                :key="customer.id"
+                                :label="customer.id"
+                                :value="customer.id">
+                            <span style="float: left">{{ customer.name }}</span>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="search">单据状态</div>
+                <div class="padding-5 col-sm-2 padding-right-5">
+                    <el-select clearable size="small" v-model="search.param3" style="width:100%" >
+                        <el-option
+                                v-for="docStatus in docStatusList"
+                                :key="docStatus.value"
+                                :label="docStatus.value"
+                                :value="docStatus.code">
+                        </el-option>
+                    </el-select>
+                </div>
+                <a class="btn btn-default btn-left" @click="reload(true)"><i class="fa fa-search"></i>&nbsp;查询</a>
+                <#if shiro.hasPermission("sys:desorder:add")>
+                <a class="btn btn-primary btn-left" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+                </#if>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group-5">
+                <div class="search">销售分支</div>
+                <div class="padding-5 col-sm-2">
+                    <el-select clearable style="width:100%"  placeholder="请选择" v-model="search.param4" size="small" @change="selectedSalesBranch" >
+                        <el-option
+                                v-for="branch in salesBranches"
+                                :key="branch.bplid"
+                                :label="branch.bplname"
+                                :value="branch.bplid">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="search">单据日期从</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param5"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+                <div class="search">至　　　</div>
+                <div class="padding-5 col-sm-2">
+                    <el-date-picker
+                            v-model="search.param6"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small">
+                    </el-date-picker>
+                </div>
+            </div>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group" style="height:10px">
+                <div class="col-sm-6" style="margin-top: -3px">{{title}}</div>
+                <div class="col-sm-6" style="margin-top: -9px;">
+                    <#if shiro.hasPermission("sys:desorder:cancel")>
+                    <a class="btn btn-default btn-left" v-show="showButton.cancel" @click="cancel" style="float: right">取消</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:desorder:close")>
+                    <a class="btn btn-default btn-left" v-show="showButton.close" @click="close" style="float: right">关闭</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:desorder:cancelrpt")>
+                    <a class="btn btn-default btn-left" v-show="showButton.cancelReceive" @click="cancelReceive" style="float: right">取消收款</a>
+                    </#if>
+                    <#if shiro.hasPermission("sys:desorder:receipt")>
+                    <a class="btn btn-default btn-left" v-show="showButton.receive" @click="receive" style="float: right">生成收款</a>
+                    </#if>
+                </div>
+            </div>
+        </div>
+
+        <form class="form-horizontal">
+            <ul class="nav nav-tabs" style="margin-bottom: 5px;">
+                <li role="presentation" class="active"><a href="javascript:void(0);">内容</a></li>
+            </ul>
+            <div class="form-group">
+                <div class="col-sm-1 control-label">客户代码</div>
+                <div class="col-sm-3">
+                    <el-select :disabled="readonly.cardCode" size="small" @change="selectedCustomer" v-model="customer.code" :filter-method="filterCustomer" filterable size="small" style="width:100%">
+                        <el-option
+                                v-for="customer in remoteCustomers"
+                                :key="customer.id"
+                                :label="customer.id"
+                                :value="customer.id">
+                            <span style="float: left">{{ customer.name }}</span>
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="col-sm-4">
+                    <el-input
+                            size="small"
+                            v-model="customer.name"
+                            :disabled="true">
+                    </el-input>
+                </div>
+                <div class="col-sm-1 control-label">订料单号</div>
+                <div class="col-sm-3">
+                    <el-input
+                            :disabled="true"
+                            size="small"
+                            v-model="sales.docNum"
+                    >
+                    </el-input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-1 control-label">分支</div>
+                <div class="col-sm-3">
+                    <el-select style="width:100%"  placeholder="请选择" :disabled="readonly.salesBranch" v-model="sales.salesBranch" size="small" @change="selectedSalesBranch" >
+                        <el-option
+                                v-for="branch in salesBranches"
+                                :key="branch.bplid"
+                                :label="branch.bplname"
+                                :value="branch.bplid">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div class="col-sm-1 control-label"></div>
+                <div class="col-sm-3">
+                </div>
+                <div class="col-sm-1 control-label"></div>
+                <div class="col-sm-3">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-1 control-label">单据日期</div>
+                <div class="col-sm-3">
+                    <el-date-picker
+                            :disabled="readonly.taxDate"
+                            v-model="sales.taxDate"
+                            type="date"
+                            value-format="yyyy-MM-dd"
+                            style="width:100%"
+                            placeholder="选择日期" size="small" @change="changeDate">
+                    </el-date-picker>
+                </div>
+                <div class="col-sm-1 control-label">单据状态</div>
+                <div class="col-sm-3">
+                    <el-input
+                            size="small"
+                            v-model="sales.docStatusName"
+                            :disabled="true"
+                    >
+                    </el-input>
+                </div>
+                <div class="col-sm-1 control-label"></div>
+                <div class="col-sm-3">
+                </div>
+            </div>
+
+            <!--物料信息-->
+            <material-table></material-table>
+            <div class="form-group">
+                <a class="btn btn-default" @click="addMaterial" style="">新增物料</a>
+            </div>
+
+            <!--收款信息-->
+            <receive-discount-table></receive-discount-table>
+
+            <div class="form-group">
+                <div class="col-sm-1 control-label">备注</div>
+                <div class="col-sm-7">
+                    <el-input
+                            type="textarea"
+                            :rows="1"
+                            placeholder="请输入内容"
+                            v-model="sales.remark"
+                    >
+                    </el-input>
+
+                </div>
+            </div>
+
+            <div class="form-group" style="padding-top: 10px">
+                <div class="col-sm-1 control-label"></div>
+                <input type="button" v-show="showButton.save" class="btn btn-primary" @click="saveOrUpdate" value="保存"/> &nbsp;&nbsp;
+                <#if shiro.hasPermission("sys:desorder:update")>
+                <input type="button" v-show="showButton.update" class="btn btn-primary" @click="saveOrUpdate" value="更新"/> &nbsp;&nbsp;
+                </#if>
+                <input type="button" class="btn btn-warning" @click="reload(true)" value="返回"/> &nbsp;&nbsp;
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var materialsCols=[[
+        ,{title: '序号',type:'numbers',templet:'#chooseMaterial'}
+        ,{field: 'itemCode', width:90,title: '物料代码',templet:'#chooseMaterial',totalRowText:'合计'}
+        ,{field: 'itemName',width:240, title: '物料名称',style:'background-color:#eee'}
+        ,{field: 'num', width:this.doctype=='return'?100:70,title: '包数',edit: 'text',totalRow:true}
+        ,{field: 'salFactor1', title: '单包重',style:'background-color:#eee'}
+        ,{field: 'kg',width:this.doctype=='return'?100:90, title: '(数量)KG',edit: 'text',totalRow:true}
+        ,{field: 'packagePrice', title: '包价',style:'background-color:#eee'}
+        ,{field: 'factPrice', title: '单价',style:'background-color:#eee',hide:true}
+        ,{field: 'factAmount',width:this.doctype=='return'?140:90, title: '金额',style:'background-color:#eee',totalRow:true}
+        ,{field: 'uesdqty', title: '已使用数量',style:'background-color:#eee'}
+        ,{field: 'lastqty', title: '剩余数量',style:'background-color:#eee'}
+        ,{fixed: 'right',width:80,title:'操作',align:'center',toolbar: '#barDemo'}
+    ]];
+</script>
+<script src="${request.contextPath}/statics/libs/router.js"></script>
+<script src="${request.contextPath}/statics/js/component/materialsTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/component/receiveAndDiscountTable.js?_${.now?long}"></script>
+<script src="${request.contextPath}/statics/js/modules/sap/purchase.js?_${.now?long}"></script>
+</body>
+
+</html>

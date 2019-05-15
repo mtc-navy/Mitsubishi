@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.mtc.modules.sap.dao.SaleReturnDao">
+
+    <!-- 查询销售退货信息 -->
+    <select id="queryList" parameterType="map" resultType="io.mtc.modules.sap.entity.SaleReturnEntity">
+        <![CDATA[
+        select * from "MTC_V_SaleReturn"
+        where (#{CardCode}='' or "CardCode" like '%'||#{CardCode}||'%' or "CardName" like '%'||#{CardCode}||'%')
+        and (#{DocStatus}='' or "DocStatus"=#{DocStatus})
+        and ((#{StartDate} is null or "TaxDate">=#{StartDate}) and (#{EndDate} is null or "TaxDate"<=#{EndDate}))
+        and (#{DeliveryNum}='' or "TakeGoodsNo" like '%'||#{DeliveryNum}||'%')
+        and "CardCode" IN (SELECT "CardCode" FROM "MTC_F_GetCustomerList"(#{UserName}))
+        order by "TaxDate" DESC ,"DocEntry" DESC
+      ]]>
+    </select>
+
+    <select id="searchMater" resultType="io.mtc.modules.sap.dto.SaleInvoiceEditDto">
+        CALL "MTC_Get_SaleReturnInfo"(#{DocEntry},N'Y')
+    </select>
+
+    <select id="searchDetail" resultType="io.mtc.modules.sap.dto.SaleInvoiceEditDto$ItemInfo">
+        CALL "MTC_Get_SaleReturnInfo"(#{DocEntry},N'N')
+    </select>
+
+    <select id="searchPay" resultType="io.mtc.modules.sap.entity.PaymentEntity">
+		CALL "MTC_Get_Payment_Returns"(#{CardCode},#{UserName},#{BPLId},#{DocEntry},'N')
+	</select>
+
+    <select id="searchDisc" resultType="io.mtc.modules.sap.entity.DiscountEntity">
+		CALL "MTC_Get_Discount_Returns"(#{CardCode},#{UserName},#{BPLId},#{DocEntry},N'N')
+	</select>
+
+</mapper>
