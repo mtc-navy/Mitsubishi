@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.CustomerDao">
+
+    <select id="list" resultType="io.mtc.modules.sap.form.CustomerForm">
+        CALL "MTC_WEB_PM_Customer"(#{UserId})
+    </select>
+
+    <select id="discount" resultType="io.mtc.modules.sap.form.DiscountForm">
+        CALL "MTC_WEB_PM_Discount"(#{UserId},#{CardCode},#{DocEntry})
+    </select>
+
+</mapper>

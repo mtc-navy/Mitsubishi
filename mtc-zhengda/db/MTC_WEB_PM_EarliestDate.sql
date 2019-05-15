@@ -1,0 +1,19 @@
+DROP PROCEDURE "MTC_WEB_PM_EarliestDate";
+CREATE PROCEDURE "MTC_WEB_PM_EarliestDate"
+(
+  UserId NVARCHAR(50),   --用户ID(=>MTC_WUSR-DocEntry)
+  WhsCode NVARCHAR(50),  --仓库编码
+  ItemCode NVARCHAR(50)  --物料编码
+)
+AS
+BEGIN
+
+  SELECT
+    CAST(CURRENT_DATE AS NVARCHAR(10)) AS "EarliestDate"
+  FROM DUMMY
+  UNION ALL
+  SELECT
+    CAST(ADD_DAYS(CURRENT_DATE,1) AS NVARCHAR(10)) AS "EarliestDate"
+  FROM DUMMY;
+
+END;

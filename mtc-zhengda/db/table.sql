@@ -1,0 +1,110 @@
+-----------------------------计划单-----------------------------
+CREATE SEQUENCE MTC_WUQT_SEQ start WITH 1;
+DROP TABLE "MTC_WUQT";
+CREATE COLUMN TABLE "MTC_WUQT"(
+"DocEntry" INT COMMENT '单据编号',
+"CardCode" NVARCHAR(50) COMMENT '客户编码',
+"CardName" NVARCHAR(100) COMMENT '客户名称',
+"DocStatus" NVARCHAR(1) COMMENT '状态0-可修改，1-不可修改，2-已取消，3-已结算',
+"SalePsitn" NVARCHAR(20) COMMENT '业务员编号',
+"SaleMan" NVARCHAR(50) COMMENT '业务员名称',
+"DeptPsitn" NVARCHAR(20) COMMENT '大部岗位号',
+"Deptmet" NVARCHAR(50) COMMENT '大部岗位名',
+"Creator" NVARCHAR(20) COMMENT '创建人',
+"CreateDate" DATE COMMENT '创建日期',
+"CreateTime" NVARCHAR(10) COMMENT '创建时间',
+"Updater" NVARCHAR(20) COMMENT '更新人',
+"UpdateDate" DATE COMMENT '更新日期',
+PRIMARY KEY("DocEntry")
+) COMMENT '计划单';
+
+DROP TABLE "MTC_WUQT1";
+CREATE COLUMN TABLE "MTC_WUQT1"(
+"DocEntry" INT COMMENT '单据编号',
+"LineNum" INT COMMENT '行号',
+"ItemCode" NVARCHAR(50) COMMENT '物料编码',
+"ItemName" NVARCHAR(100) COMMENT '物料名称',
+"PerPacKg" DECIMAL(19,6) COMMENT '规格（标重）',
+"Packages" DECIMAL(19,6) COMMENT '包数',
+"Quantity" DECIMAL(19,6) COMMENT '数量',
+"InvntryUom" NVARCHAR(20) COMMENT '库存单位',
+"WhsCode" NVARCHAR(20) COMMENT '基地仓库',
+"WhsName" NVARCHAR(50) COMMENT '仓库名称',
+"EarliestDate" DATE COMMENT '提货日期',
+"WRDRQty" DECIMAL(19,6) COMMENT '已提货量',
+"LineStatus" NVARCHAR(1) COMMENT '行状态',
+"IsUseForPro" NVARCHAR(1) COMMENT '允许被生产引用',
+"ForProStatus" NVARCHAR(1) COMMENT '生产引用状态',
+"TargetEntry" INT COMMENT '生产计划单号',
+"TargetLine" INT COMMENT '生产计划单行号') COMMENT '计划单子表';
+
+-----------------------------提货单-----------------------------
+CREATE SEQUENCE MTC_WRDR_SEQ start WITH 1;
+DROP TABLE "MTC_WRDR";
+CREATE COLUMN TABLE "MTC_WRDR"(
+"DocEntry" INT COMMENT '单据编号',
+"CardCode" NVARCHAR(20) COMMENT '客户编码',
+"CardName" NVARCHAR(50) COMMENT '客户名称',
+"DocStatus" NVARCHAR(1) COMMENT '状态0-草稿，1-审批中，2-未批准，3-已生效，4-待过一磅，5-提货中，6-待过二磅，7-已出库，8-已作废，',
+"EarliestDate" DATE COMMENT '提货日期',
+"IsInvoices" NVARCHAR(1) COMMENT '提供发票0-不开票，1-普通发票，2-专用发票，3-电子发票',
+"InvoiceTy" NVARCHAR(1) COMMENT '开票状态0-未导出，1-已导出未开票，2-已开票',
+"CarNum" NVARCHAR(20) COMMENT '车牌号',
+"AgentCode" NVARCHAR(20) COMMENT '运输商编码',
+"AgentName" NVARCHAR(50) COMMENT '运输商名称',
+"PerAgtPrice" DECIMAL(19,6) COMMENT '运费单价',
+"SumPAmt" DECIMAL(19,6) COMMENT '牌价合计',
+"SumBDisc" DECIMAL(19,6) COMMENT '现场折扣合计',
+"SumEDisc" DECIMAL(19,6) COMMENT '现场运补合计',
+"UsedDisc" DECIMAL(19,6) COMMENT '使用折扣金额',
+"DocTotal" DECIMAL(19,6) COMMENT '单据金额',
+"GatherAmt" DECIMAL(19,6) COMMENT '收款金额',
+"DebtAmt" DECIMAL(19,6) COMMENT '欠款金额',
+"RefundDate" DATE COMMENT '预计还款日',
+"SalePsitn" NVARCHAR(20) COMMENT '业务员编号',
+"SaleMan" NVARCHAR(50) COMMENT '业务员名称',
+"DeptPsitn" NVARCHAR(20) COMMENT '大部岗位号',
+"Deptmet" NVARCHAR(50) COMMENT '大部岗位名',
+"UrgencyCd" NVARCHAR(20) COMMENT '插单原因',
+"DocType" NVARCHAR(1) COMMENT '生成模式0-依据计划单，1-手工创建',
+"Creator" NVARCHAR(20) COMMENT '创建人',
+"CreateDate" DATE COMMENT '创建日期',
+"CreateTime" NVARCHAR(10) COMMENT '创建时间',
+"Updater" NVARCHAR(20) COMMENT '更新人',
+"UpdateDate" DATE COMMENT '更新日期',
+"UpdateTime" NVARCHAR(10) COMMENT '更新时间',
+"OAReqstNum" NVARCHAR(50) COMMENT 'OA流程编号',
+"OAApprDate" DATE COMMENT 'OA审批日期',
+"OAPropose" NVARCHAR(200) COMMENT 'OA审批意见',
+PRIMARY KEY("DocEntry")
+) COMMENT '提货单';
+
+DROP TABLE "MTC_WRDR1";
+CREATE COLUMN TABLE "MTC_WRDR1"(
+"DocEntry" INT COMMENT '单据编号',
+"LineNum" INT COMMENT '行号',
+"ItemCode" NVARCHAR(50) COMMENT '物料编码',
+"ItemName" NVARCHAR(100) COMMENT '物料名称',
+"PerPacKg" DECIMAL(19,6) COMMENT '规格（标重）',
+"Packages" DECIMAL(19,6) COMMENT '包数',
+"Quantity" DECIMAL(19,6) COMMENT '数量',
+"InvntryUom" NVARCHAR(20) COMMENT '库存单位',
+"WhsCode" NVARCHAR(20) COMMENT '基地仓库',
+"WhsName" NVARCHAR(50) COMMENT '仓库名称',
+"AvarialQty" DECIMAL(19,6) COMMENT '可用库存',
+"BasePrice" DECIMAL(19,6) COMMENT '牌价',
+"BaseDisc" DECIMAL(19,6) COMMENT '现场折扣',
+"BaseExpn" DECIMAL(19,6) COMMENT '现场运补',
+"Pirce" DECIMAL(19,6) COMMENT '开票价',
+"VatGroup" NVARCHAR(10) COMMENT '税码',
+"LineTotal" DECIMAL(19,6) COMMENT '行金额',
+"LineStatus" NVARCHAR(1) COMMENT '行状态',
+"SaelPsitn" NVARCHAR(20) COMMENT '业务员编号',
+"SaleMan" NVARCHAR(50) COMMENT '业务员名称',
+"XQMan" NVARCHAR(50) COMMENT '区域主管',
+"DQMan" NVARCHAR(50) COMMENT '大区主管',
+"DBMan" NVARCHAR(50) COMMENT '部主管',
+"BaseEntry" INT COMMENT '计划单号',
+"BaseLine" INT COMMENT '计划单行号',
+"TargetEntry" INT COMMENT '销售订单号',
+"TargetLine" INT COMMENT '销售订单行号') COMMENT '提货单子表';
