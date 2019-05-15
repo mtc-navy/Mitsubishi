@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 物料列表
+ * 计划单列表
  */
 @Mapper
 public interface PlanDao {

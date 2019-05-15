@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.mtc.modules.sap.dao.WorkOrderDao">
+
+    <select id="list" resultType="io.mtc.modules.sap.entity.MtcWRDREntity">
+        CALL "MTC_WEB_PM_GetPlanList"(#{UserId},#{PageIndex},#{PageSize},#{StartDate},#{EndDate},#{CardCode},#{CardName},#{DocStatus})
+    </select>
+
+    <select id="update" resultType="java.lang.String">
+        CALL "MTC_WEB_PM_UpdateWorkOrderDetail"(#{UserId},#{DocEntry},#{LineNum},#{Quantity},#{CarNum})
+    </select>
+
+    <select id="closeitem" resultType="java.lang.String">
+        CALL "MTC_WEB_PM_CloseWorkOrderDetail"(#{UserId},#{DocEntry},#{LineNum})
+    </select>
+</mapper>
