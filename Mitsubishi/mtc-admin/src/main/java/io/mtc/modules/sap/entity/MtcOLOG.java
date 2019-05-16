@@ -24,7 +24,7 @@ public class MtcOLOG implements Serializable {
      */
     @ApiModelProperty(value = "ID")
     @TableField(value = "\"ID\"")
-    private Integer id;
+    private Long id;
 
     /**
      * Message

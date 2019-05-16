@@ -23,7 +23,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "ID")
     @TableField(value = "\"ID\"")
-    private Integer id;
+    private Long id;
 
     /**
      * 配置表单号
@@ -32,7 +32,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "配置表单号")
     @TableField(value = "\"CfgDocEntry\"")
-    private Integer cfgdocentry;
+    private Long cfgdocentry;
 
     /**
      * SAP销售单号
@@ -41,7 +41,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "SAP销售单号")
     @TableField(value = "\"ORDREntry\"")
-    private Integer ordrentry;
+    private Long ordrentry;
 
     /**
      * SAP交货单号
@@ -50,7 +50,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "SAP交货单号")
     @TableField(value = "\"ODLNEntry\"")
-    private Integer odlnentry;
+    private Long odlnentry;
 
     /**
      * SAP应收发票单号
@@ -59,7 +59,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "SAP应收发票单号")
     @TableField(value = "\"OINVEntry\"")
-    private Integer oinventry;
+    private Long oinventry;
 
     /**
      * 日志ID
@@ -68,7 +68,7 @@ public class MtcOMMP implements Serializable {
      */
     @ApiModelProperty(value = "日志ID")
     @TableField(value = "\"LogID\"")
-    private Integer logid;
+    private Long logid;
 
     private static final long serialVersionUID = 1L;
 }
