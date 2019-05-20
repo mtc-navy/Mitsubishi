@@ -111,7 +111,7 @@ public class PrintController {
 
         Constant.PDFType pdfType = Constant.PDFType.数量单价折扣;
 
-        saleInvoiceService.printLog(docEntry,docType,pdfType);
+        //saleInvoiceService.printLog(docEntry,docType,pdfType);
 
         ReportClientDocument doc = null;
         ByteArrayInputStream bis = null;
