@@ -39,6 +39,7 @@ $(function () {
             {label: '订料单号', name: 'desOrderNum', width: 75, sortable: false},
             {label: '保价单号', name: 'priceOrderNum', width: 75, sortable: false},
             {label: '运输方式', name: 'tranType', width: 70, sortable: false},
+            {label: '制单信息', name: 'create', width: 200, sortable: false},
         ],
         viewrecords: true,
         height: $(window).height() - 200,

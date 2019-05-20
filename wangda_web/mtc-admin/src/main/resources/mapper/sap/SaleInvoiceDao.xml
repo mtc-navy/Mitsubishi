@@ -5,23 +5,25 @@
     <!-- 查询销售开票信息 -->
     <select id="queryList" parameterType="map" resultType="io.mtc.modules.sap.entity.SaleInvoiceEntity">
 
-        select * from
+        SELECT * FROM
         <if test="'Return'.toString()==type">
             "MTC_V_SaleInvoice_ALL"
         </if>
         <if test="'Return'.toString()!=type">
             "MTC_V_SaleInvoice"
         </if>
-        t1
+        T1
+        LEFT JOIN "OUSR" SR ON SR."USER_CODE"=#{UserName}
         <![CDATA[
-        where (#{CardCode}='' or t1."CardCode" like '%'||#{CardCode}||'%' or t1."CardName" like '%'||#{CardCode}||'%')
-        and (#{DocStatus}='' or t1."DocStatus"=#{DocStatus})
-        and (#{DocNum}='' or TO_CHAR(t1."DocNum") like '%'||#{DocNum}||'%')
-        and (#{TakeNo}='' or TO_CHAR(t1."TakeNo") like '%'||#{TakeNo}||'%')
-        and ((#{StartDate} is null or t1."TaxDate">=#{StartDate}) and (#{EndDate} is null or "TaxDate"<=#{EndDate}))
-        and t1."CardCode" IN (SELECT "CardCode" FROM "MTC_F_GetCustomerList"(#{UserName}))
-        and exists (select "BPLId" from "USR6" t2 where t2."UserCode" = #{UserName} and t2."BPLId" in(t1."BPLId"))
-        order by t1."TaxDate" DESC ,t1."DocEntry" DESC
+        where (#{CardCode}='' or T1."CardCode" like '%'||#{CardCode}||'%' or T1."CardName" like '%'||#{CardCode}||'%')
+        and (#{DocStatus}='' or T1."DocStatus"=#{DocStatus})
+        and (#{DocNum}='' or TO_CHAR(T1."DocNum") like '%'||#{DocNum}||'%')
+        and (#{TakeNo}='' or TO_CHAR(T1."TakeNo") like '%'||#{TakeNo}||'%')
+        and ((#{StartDate} is null or T1."TaxDate">=#{StartDate}) and (#{EndDate} is null or T1."TaxDate"<=#{EndDate}))
+        and T1."CardCode" IN (SELECT "CardCode" FROM "MTC_F_GetCustomerList"(#{UserName}))
+        and (SR."SUPERUSER"='Y' OR SR."USER_CODE"=T1."Creator")
+        and exists (select "BPLId" from "USR6" T2 where T2."UserCode" = #{UserName} and T2."BPLId" in(T1."BPLId"))
+        order by T1."TaxDate" DESC ,T1."DocEntry" DESC
 
         ]]>
     </select>

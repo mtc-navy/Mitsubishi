@@ -2,7 +2,7 @@ $(function () {
 
     $(function () {
         $("#jqGrid").setjgGrid({
-            api:  'sys/list/orderDeliveryList', //API地址
+            api:  'sys/list/orderDeliverysList', //API地址
             height:'full',
             hiddenFields: ['DOCENTRY','ODLNDocEntry'],               //隐藏字段
             qParam: vm.search,                  //查询参数
