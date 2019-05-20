@@ -47,12 +47,14 @@ public class PrintController {
     @RequiresPermissions("sys:invoice:print")
     public void print(@PathVariable("docEntry")Long docEntry,@PathVariable(value = "type",required = false) String type, HttpServletResponse response) throws ReportSDKException, IOException {
 
-        Constant.PDFType pdfType =  null;
+       /* Constant.PDFType pdfType =  null;
         if(StringUtils.isNotEmpty(type)){
             pdfType = Constant.PDFType.value(type);
         }else{
             pdfType = saleInvoiceService.print(docEntry);
-        }
+        }*/
+
+        Constant.PDFType pdfType = Constant.PDFType.数量单价折扣;
 
         ReportClientDocument doc = null;
         OutputStream ops = null;
@@ -100,12 +102,14 @@ public class PrintController {
     @ResponseBody
     public R vaildPrint(@PathVariable("docEntry")Long docEntry,@PathVariable(value = "type",required = false) String type,String docType) throws Exception {
 
-        Constant.PDFType pdfType =  null;
+        /*Constant.PDFType pdfType =  null;
         if(StringUtils.isNotEmpty(type)){
             pdfType = Constant.PDFType.折扣兑现;
         }else{
             pdfType = saleInvoiceService.print(docEntry);
-        }
+        }*/
+
+        Constant.PDFType pdfType = Constant.PDFType.数量单价折扣;
 
         saleInvoiceService.printLog(docEntry,docType,pdfType);
 
