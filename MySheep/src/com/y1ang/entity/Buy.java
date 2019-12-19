@@ -46,6 +46,10 @@ public class Buy {
      * 批次号
      */
     private int batchNumber;
+    /**
+     * 欠款
+     */
+    private double buyArrears;
 
     public int getBuyID() {
         return buyID;
@@ -125,6 +129,14 @@ public class Buy {
 
     public void setBatchNumber(int batchNumber) {
         this.batchNumber = batchNumber;
+    }
+
+    public double getBuyArrears() {
+        return buyArrears;
+    }
+
+    public void setBuyArrears(double buyArrears) {
+        this.buyArrears = buyArrears;
     }
 
     public Buy(int buyID, String buyDate, int buyQuantity, String buyVariety, double buyPrice, String buyAddress,

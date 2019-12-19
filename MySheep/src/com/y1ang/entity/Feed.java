@@ -37,6 +37,10 @@ public class Feed {
      */
 
     public int batchNumber;
+    /**
+     * 欠款
+     */
+    public double feedArrears;
 
     public int getFeedID() {
         return feedID;
@@ -94,4 +98,11 @@ public class Feed {
         this.batchNumber = batchNumber;
     }
 
+    public double getFeedArrears() {
+        return feedArrears;
+    }
+
+    public void setFeedArrears(double feedArrears) {
+        this.feedArrears = feedArrears;
+    }
 }

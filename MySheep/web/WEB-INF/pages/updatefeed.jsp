@@ -45,9 +45,9 @@
         </div><br />
         <div class="layui-container">
             <div class="layui-form-item">
-                <label class="layui-form-label">饲料单价</label>
+                <label class="layui-form-label">饲料总价</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="feedPrice" value="${feed.feedPrice }" class="layui-input" autocomplete="off" placeholder="请输入单价" lay-verify="feedPrice" lay-verType="msg"/>
+                    <input type="text" name="feedTotal" value="${feed.feedTotal }" class="layui-input" autocomplete="off" placeholder="请输入总价" lay-verify="feedTotal" lay-verType="msg"/>
                 </div>
             </div>
         </div><br />
@@ -57,9 +57,18 @@
                 <div class="layui-input-block">
                     <select name="feedPayState" lay-verify="required|feedPayState" lay-verType="msg">
                         <option value="">请选择支付状态</option>
-                        <option value="已支付" <c:if test="${feed.feedPayState=='已支付' }">selected</c:if>>已支付</option>
-                        <option value="未支付" <c:if test="${feed.feedPayState=='未支付' }">selected</c:if>>未支付</option>
+                        <option value="已付" <c:if test="${feed.feedPayState=='已付' }">selected</c:if>>已付</option>
+                        <option value="未付" <c:if test="${feed.feedPayState=='未付' }">selected</c:if>>未付</option>
+                        <option value="未清" <c:if test="${feed.feedPayState=='未清' }">selected</c:if>>未清</option>
                     </select>
+                </div>
+            </div>
+        </div><br />
+        <div class="layui-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">欠款</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="feedArrears" value="${feed.feedArrears }" class="layui-input" autocomplete="off" placeholder="请输入欠款" lay-verify="feedArrears" lay-verType="msg"/>
                 </div>
             </div>
         </div>

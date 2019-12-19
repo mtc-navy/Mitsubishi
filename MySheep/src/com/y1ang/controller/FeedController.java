@@ -31,7 +31,7 @@ public class FeedController {
 
     /**
      * 跳转到饲料账单界面
-     * 
+     *
      * @return
      */
     @RequestMapping("/feed.html")
@@ -41,7 +41,7 @@ public class FeedController {
 
     /**
      * 显示饲料账单数据
-     * 
+     *
      * @param page
      * @param limit
      * @return
@@ -59,6 +59,7 @@ public class FeedController {
         fj.setData(feedRecord);
         return fj;
     }
+
     /**
      * 跳转到添加饲料账单界面
      *
@@ -81,7 +82,9 @@ public class FeedController {
         try {
             int batchNumber = ibs.getStatusActiveBatchNumber();
             feed.setBatchNumber(batchNumber);
-            feed.setFeedTotal(feed.getFeedQuantity() * feed.getFeedPrice());
+            if (feed.getFeedQuantity() > 0) {
+                feed.setFeedPrice(feed.getFeedTotal() / feed.getFeedQuantity());
+            }
             int n = service.addFeedRecord(feed);
             if (n > 0) {
                 return "OK";
@@ -94,7 +97,7 @@ public class FeedController {
 
     /**
      * 删除饲料账单记录
-     * 
+     *
      * @param feedID
      * @return
      */
@@ -110,7 +113,7 @@ public class FeedController {
 
     /**
      * 跳转到饲料账单修改界面
-     * 
+     *
      * @param feedID
      * @param model
      * @return
@@ -124,14 +127,16 @@ public class FeedController {
 
     /**
      * 更新饲料账单
-     * 
+     *
      * @param feed
      * @return
      */
     @RequestMapping("/updatefeed")
     @ResponseBody
     public String updateFeed(Feed feed) {
-        feed.setFeedTotal(feed.getFeedQuantity() * feed.getFeedPrice());
+        if (feed.getFeedQuantity() > 0) {
+            feed.setFeedPrice(feed.getFeedTotal() / feed.getFeedQuantity());
+        }
         int n = service.updateFeedRecord(feed);
         if (n > 0) {
             return "OK";

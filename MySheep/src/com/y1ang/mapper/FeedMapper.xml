@@ -8,6 +8,7 @@
 		<result column="feed_price" jdbcType="DOUBLE" property="feedPrice"/>
 		<result column="feed_paystate" jdbcType="VARCHAR" property="feedPayState"/>
 		<result column="feed_total" jdbcType="DOUBLE" property="feedTotal"/>
+		<result column="feed_arrears" jdbcType="DOUBLE" property="feedArrears"/>
 		<result column="batch_number" jdbcType="INTEGER" property="batchNumber"/>
 	</resultMap>
 	
@@ -19,7 +20,8 @@
 			feed_quantity,
 			feed_price,
 			feed_paystate,
-			feed_total
+			feed_total,
+			feed_arrears
 		FROM
 			t_feed f,
 			t_batch b
@@ -37,14 +39,15 @@
 			feed_quantity,
 			feed_price,
 			feed_paystate,
-			feed_total 
+			feed_total,
+			feed_arrears
 		from t_feed 
 		where feed_id=#{feedID}
 	</select>
 	
 	<!-- 新增饲料账单记录 -->
 	<insert id="addFeedRecord" parameterType="com.y1ang.entity.Feed">
-		insert into t_feed value(0,#{sendDate},#{feedQuantity},#{feedPrice},#{feedPayState},#{feedTotal},#{batchNumber})
+		insert into t_feed value(0,#{sendDate},#{feedQuantity},#{feedPrice},#{feedPayState},#{feedTotal},#{batchNumber},#{feedArrears})
 	</insert>
 		
 	<!-- 更新饲料账单 -->
@@ -56,7 +59,8 @@
 			feed_quantity = #{feedQuantity},
 			feed_price = #{feedPrice},
 			feed_paystate = #{feedPayState},
-			feed_total = #{feedTotal}
+			feed_total = #{feedTotal},
+			feed_arrears = #{feedArrears}
 		where
 			feed_id = #{feedID}
 	</update>

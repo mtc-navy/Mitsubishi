@@ -30,7 +30,7 @@ public class ICountServiceImpl implements ICountService {
     }
 
     /**
-     * 获取已支付的饲料包数
+     * 获取已付的饲料包数
      *
      * @param batchNumber
      * @return
@@ -41,7 +41,7 @@ public class ICountServiceImpl implements ICountService {
     }
 
     /**
-     * 获取未支付的饲料包数
+     * 获取未付的饲料包数
      *
      * @param batchNumber
      * @return
@@ -63,7 +63,7 @@ public class ICountServiceImpl implements ICountService {
     }
 
     /**
-     * 获取已支付饲料金额
+     * 获取已付饲料金额
      *
      * @param batchNumber
      * @return
@@ -74,7 +74,7 @@ public class ICountServiceImpl implements ICountService {
     }
 
     /**
-     * 获取未支付饲料金额
+     * 获取未付饲料金额
      *
      * @param batchNumber
      * @return
@@ -96,6 +96,17 @@ public class ICountServiceImpl implements ICountService {
     }
 
     /**
+     * 查询饲料总欠款
+     *
+     * @param batchNumber
+     * @return
+     */
+    @Override
+    public double getFeedArrears(int batchNumber) {
+        return mapper.getFeedArrears(batchNumber);
+    }
+
+    /**
      * 查询购买小羊账单
      *
      * @param batchNumber
@@ -104,6 +115,17 @@ public class ICountServiceImpl implements ICountService {
     @Override
     public double getPigletMoney(int batchNumber) {
         return mapper.getPigletMoney(batchNumber);
+    }
+
+    /**
+     * 查询购买小羊账单
+     *
+     * @param batchNumber
+     * @return
+     */
+    @Override
+    public double getPigletArrears(int batchNumber) {
+        return mapper.getPigletArrears(batchNumber);
     }
 
     /**
@@ -126,6 +148,17 @@ public class ICountServiceImpl implements ICountService {
     @Override
     public double getSaleMoney(int batchNumber) {
         return mapper.getSaleMoney(batchNumber);
+    }
+
+    /**
+     * 查询卖羊欠款统计
+     *
+     * @param batchNumber
+     * @return
+     */
+    @Override
+    public double getSaleArrears(int batchNumber) {
+        return mapper.getSaleArrears(batchNumber);
     }
 
     /**

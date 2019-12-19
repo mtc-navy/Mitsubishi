@@ -90,12 +90,13 @@
                         groups:4
                     },
                 	cols: [[ //表头
-                      {field: 'sendDate', title: '日期', sort: true,align:'center',width:110}
+                       {title:'操作',align:'center',width:115,toolbar:'#tools'}
+                      ,{field: 'feedPayState', title: '状态',align:'center',width:75}
+                      ,{field: 'sendDate', title: '日期', sort: true,align:'center',width:85}
                       ,{field: 'feedQuantity', title: '数量',align:'center'}
-                      ,{field: 'feedPayState', title: '状态',align:'center',sort:true,templet:'#stateTpl',width:80}
-                      ,{field: 'feedPrice', title: '单价',align:'center',width:80}
-                      ,{field: 'feedTotal', title: '小计',align:'center',width:100}
-                      ,{title:'操作',align:'center',width:120,toolbar:'#tools',}
+                      ,{field: 'feedTotal', title: '总价',align:'center',width:75}
+                      ,{field: 'feedArrears', title: '欠款',align:'center',width:75}
+                      ,{field: 'feedPrice', title: '单价',align:'center',width:75}
                 	]]
                 });
                 
@@ -131,7 +132,7 @@
         </script>
         <!--单元格样式-->
         <script type="text/html" id="stateTpl">
-          {{#  if(d.feedPayState === '已支付'){ }}
+          {{#  if(d.feedPayState === '已付'){ }}
             <span style="color: #009688;">{{ d.feedPayState}}</span>
           {{#  } else { }}
             <span style="color: #FF5722;">{{ d.feedPayState }}</span>

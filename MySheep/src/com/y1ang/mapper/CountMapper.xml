@@ -18,14 +18,14 @@
         as p
     </select>
 
-    <!--获取已支付饲料数目-->
+    <!--获取已付饲料数目-->
     <select id="getPaidFeedAmount" resultType="Integer" parameterType="Integer">
-        select ifnull(sum(feed_quantity),0.0) from t_feed where feed_paystate = '已支付' and batch_number = #{batchNumber}
+        select ifnull(sum(feed_quantity),0.0) from t_feed where feed_paystate = '已付' and batch_number = #{batchNumber}
     </select>
 
-    <!--获取未支付饲料数目-->
+    <!--获取未付饲料数目-->
     <select id="getUnPaidFeedAmount" resultType="Integer" parameterType="Integer">
-        select ifnull(sum(feed_quantity),0) from t_feed where feed_paystate = '未支付' and batch_number = #{batchNumber}
+        select ifnull(sum(feed_quantity),0) from t_feed where feed_paystate = '未付' and batch_number = #{batchNumber}
     </select>
 
     <!--获取合计饲料数目-->
@@ -33,14 +33,14 @@
         select ifnull(sum(feed_quantity),0) from t_feed where batch_number = #{batchNumber}
     </select>
 
-    <!--获取已支付饲料金额-->
+    <!--获取已付饲料金额-->
     <select id="getPaidMoney" resultType="Double" parameterType="Integer">
-        select ifnull(sum(feed_quantity * feed_price),0.0) from t_feed where feed_paystate = '已支付' and batch_number = #{batchNumber}
+        select ifnull(sum(feed_quantity * feed_price),0.0) from t_feed where feed_paystate = '已付' and batch_number = #{batchNumber}
     </select>
 
-    <!--获取未支付饲料金额-->
+    <!--获取未付饲料金额-->
     <select id="getUnPaidMoney" resultType="Double" parameterType="Integer">
-         select ifnull(sum(feed_quantity * feed_price),0.0) from t_feed where feed_paystate = '未支付' and batch_number = #{batchNumber}
+         select ifnull(sum(feed_quantity * feed_price),0.0) from t_feed where feed_paystate = '未付' and batch_number = #{batchNumber}
     </select>
 
     <!--统计饲料总开支-->
@@ -48,9 +48,18 @@
         select ifnull(sum(feed_total),0.0) from t_feed where batch_number = #{batchNumber}
     </select>
 
+    <!--统计饲料总欠款-->
+    <select id="getFeedArrears" parameterType="Integer" resultType="Double">
+        select ifnull(sum(feed_arrears),0.0) from t_feed where batch_number = #{batchNumber}
+    </select>
+
     <!--查询小羊账单-->
     <select id="getPigletMoney" parameterType="Integer" resultType="Double">
         select ifnull(sum(total_money),0.0) from t_buy where batch_number = #{batchNumber}
+    </select>
+
+    <select id="getPigletArrears" parameterType="Integer" resultType="Double">
+        select ifnull(sum(buy_arrears),0.0) from t_buy where batch_number = #{batchNumber}
     </select>
 
     <select id="getPigletCount" parameterType="Integer" resultType="Integer">
@@ -60,6 +69,10 @@
     <!--查询卖羊账单-->
     <select id="getSaleMoney" resultType="Double" parameterType="Integer">
         select ifnull(sum(sale_amount),0.0) from t_sale where batch_numer = #{batchNumber}
+    </select>
+
+    <select id="getSaleArrears" resultType="Double" parameterType="Integer">
+        select ifnull(sum(sale_arrears),0.0) from t_sale where batch_numer = #{batchNumber}
     </select>
 
     <select id="getSaleCount" resultType="Integer" parameterType="Integer">

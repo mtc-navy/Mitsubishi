@@ -29,13 +29,14 @@ layui.use(['element', 'table', 'layer'], function () {
             dataType: "json",
             type: "json",
             success: function (data) {
-                $(".feedChart").append(("<tr><td>饲料已支付</td><td>" + data.feedPaid + " 包</td></tr>"));
-                $(".feedChart").append(("<tr><td>饲料未支付</td><td>" + data.feedUnPaid + " 包</td></tr>"));
+                $(".feedChart").append(("<tr><td>饲料已付</td><td>" + data.feedPaid + " 包</td></tr>"));
+                $(".feedChart").append(("<tr><td>饲料未付</td><td>" + data.feedUnPaid + " 包</td></tr>"));
                 $(".feedChart").append(("<tr><td>饲料总数量</td><td>" + data.feedTotal + " 包</td></tr>"));
                 $(".feedChart").append("<br>");
-                $(".feedChart").append(("<tr><td>金额已支付</td><td>" + data.moneyPaid + " 元</td></tr>"));
-                $(".feedChart").append(("<tr><td>金额未支付</td><td>" + data.moneyUnPaid + " 元</td></tr>"));
+                $(".feedChart").append(("<tr><td>金额已付</td><td>" + data.moneyPaid + " 元</td></tr>"));
+                $(".feedChart").append(("<tr><td>金额未付</td><td>" + data.moneyUnPaid + " 元</td></tr>"));
                 $(".feedChart").append(("<tr><td>金额总数</td><td>" + data.moneyTotal + " 元</td></tr>"));
+                $(".feedChart").append(("<tr><td>欠款金额</td><td>" + data.moneyArrears + " 元</td></tr>"));
             }
         });
 
@@ -45,7 +46,8 @@ layui.use(['element', 'table', 'layer'], function () {
             dataType: "json",
             type: "post",
             success: function (data) {
-                $(".pigletChart").append("<tr><td>买羊合计</td><td>" + data.pigletCount + "</td><td>" + data.pigletChart + " 元</td></tr>")
+                $(".pigletChart").append("<tr><td>买羊合计</td><td>" + data.pigletCount + "</td><td>" + data.pigletChart + " 元</td></tr>");
+                $(".pigletChart").append("<tr><td>欠款合计</td><td>-</td><td>" + data.pigletArrears + " 元</td></tr>");
             }
         });
         /*卖羊账单*/
@@ -54,7 +56,8 @@ layui.use(['element', 'table', 'layer'], function () {
             dataType: "json",
             type: "post",
             success: function (data) {
-                $(".saleChart").append("<tr><td>卖羊合计</td><td>" + data.saleCount + "</td><td>" + data.saleChart + " 元</td></tr>")
+                $(".saleChart").append("<tr><td>卖羊合计</td><td>" + data.saleCount + "</td><td>" + data.saleChart + " 元</td></tr>");
+                $(".saleChart").append("<tr><td>欠款合计</td><td>-</td><td>" + data.saleArrears + " 元</td></tr>");
             }
         });
 

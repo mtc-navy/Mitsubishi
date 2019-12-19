@@ -47,6 +47,10 @@ public class Sale {
      * 批次号
      */
     private int batchNumber;
+    /**
+     * 欠款
+     */
+    private double saleArrears;
 
     public int getSaleID() {
         return saleID;
@@ -128,8 +132,16 @@ public class Sale {
         this.batchNumber = batchNumber;
     }
 
+    public double getSaleArrears() {
+        return saleArrears;
+    }
+
+    public void setSaleArrears(double saleArrears) {
+        this.saleArrears = saleArrears;
+    }
+
     public Sale(int saleID, String saleDate, double salePrice, int saleQuantity, String saleVariety, double totalWeight,
-            double averageWeight, double saleAmount, double averageMoney, int batchNumber) {
+                double averageWeight, double saleAmount, double averageMoney, int batchNumber) {
         super();
         this.saleID = saleID;
         this.saleDate = saleDate;

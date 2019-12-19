@@ -11,6 +11,7 @@
         <result column="average_weight" jdbcType="DOUBLE" property="averageWeight"/>
         <result column="beyond_price" jdbcType="DOUBLE" property="beyondPrice"/>
         <result column="total_money" jdbcType="DOUBLE" property="totalMoney"/>
+        <result column="buy_arrears" jdbcType="DOUBLE" property="buyArrears"/>
         <result column="batch_number" jdbcType="INTEGER" property="batchNumber"/>
     </resultMap>
     <!-- 查询所有购买账单 -->
@@ -24,7 +25,8 @@
              buy_address,
              average_weight,
              beyond_price,
-             total_money
+             total_money,
+             buy_arrears
          from 
             t_buy buy,t_batch batch
          where 
@@ -45,7 +47,8 @@
              buy_address,
              average_weight,
              beyond_price,
-             total_money
+             total_money,
+             buy_arrears
         from t_buy
         where  buy_id = #{buyID}
     </select>
@@ -68,6 +71,7 @@
           #{averageWeight},
           #{beyondPrice},
           #{totalMoney},
+          #{batchNumber},
           #{batchNumber}
         )
     </insert>
@@ -81,7 +85,8 @@
             buy_address = #{buyAddress},
             average_weight = #{averageWeight},
             beyond_price = #{beyondPrice},
-            total_money = #{totalMoney}
+            total_money = #{totalMoney},
+            buy_arrears = #{batchNumber}
         where buy_id = #{buyID}
     </update>
 

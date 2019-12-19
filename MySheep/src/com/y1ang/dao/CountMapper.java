@@ -18,7 +18,7 @@ public interface CountMapper {
     public ProfitAndLoss getProfitAndLoss(int batchNumber);
 
     /**
-     * 获取已支付的饲料包数
+     * 获取已付的饲料包数
      *
      * @param batchNumber
      * @return
@@ -26,7 +26,7 @@ public interface CountMapper {
     public int getPaidFeedAmount(int batchNumber);
 
     /**
-     * 获取未支付的饲料包数
+     * 获取未付的饲料包数
      *
      * @param batchNumber
      * @return
@@ -42,7 +42,7 @@ public interface CountMapper {
     public int getAllFeedAmount(int batchNumber);
 
     /**
-     * 获取已支付饲料金额
+     * 获取已付饲料金额
      *
      * @param batchNumber
      * @return
@@ -50,7 +50,7 @@ public interface CountMapper {
     public double getPaidMoney(int batchNumber);
 
     /**
-     * 获取未支付饲料金额
+     * 获取未付饲料金额
      *
      * @param batchNumber
      * @return
@@ -66,12 +66,28 @@ public interface CountMapper {
     public double getFeedMoney(int batchNumber);
 
     /**
+     * 查询饲料总欠款
+     *
+     * @param batchNumber
+     * @return
+     */
+    public double getFeedArrears(int batchNumber);
+
+    /**
      * 查询购买小羊账单
      *
      * @param batchNumber
      * @return
      */
     public double getPigletMoney(int batchNumber);
+
+    /**
+     * 查询购买小羊欠款
+     *
+     * @param batchNumber
+     * @return
+     */
+    public double getPigletArrears(int batchNumber);
 
     /**
      * 查询购买小羊账单
@@ -88,6 +104,14 @@ public interface CountMapper {
      * @return
      */
     public double getSaleMoney(int batchNumber);
+
+    /**
+     * 查询卖羊账单统计
+     *
+     * @param batchNumber
+     * @return
+     */
+    public double getSaleArrears(int batchNumber);
 
     /**
      * 查询卖羊账单统计

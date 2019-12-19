@@ -84,15 +84,16 @@
                 groups:3
             },
             cols:[[
-                {field:"buyDate",title:"购买日期",align:"center",width:115},
-                {field:"buyQuantity",title:"购买数量",align:"center",width:120},
+                {title:'操作',align:'center',width:115,toolbar:'#tools'},
+                {field:"buyDate",title:"购买日期",align:"center",width:90},
+                {field:"buyQuantity",title:"购买数量",align:"center",width:90},
+                {field:"totalMoney",title:"总金额",align:"center",width:100},
+                {field:"buyArrears",title:"欠款",align:"center",width:90},
                 {field:"buyPrice",title:"购买价格",align:"center",width:120},
-                {field:"beyondPrice",title:"超出标准重量价格",align:"center",width:155},
+                /*{field:"beyondPrice",title:"超出标准重量价格",align:"center",width:155},*/
                 {field:"buyVariety",title:"品种",align:"center",width:115},
-                {field:"buyAddress",title:"购买地址",align:"center",width:120},
-                {field:"averageWeight",title:"平均重量",align:"center",width:120},
-                {field:"totalMoney",title:"总金额",align:"center",width:120},
-                {title:'操作',align:'center',width:120,toolbar:'#tools'}
+                {field:"buyAddress",title:"购买来源",align:"center",width:120},
+                {field:"averageWeight",title:"平均重量",align:"center",width:120}
             ]]
         });
 

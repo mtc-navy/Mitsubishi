@@ -84,15 +84,16 @@
                     groups:3
                 },
                 cols:[[
-                    {field:"saleDate",title:"日期",align:"center",width:115},
-                    {field:"saleQuantity",title:"数量",align:"center",width:110},
+                    {title:'操作',align:'center',width:118,toolbar:'#tools'},
+                    {field:"saleDate",title:"日期",align:"center",width:90},
+                    {field:"saleQuantity",title:"数量",align:"center",width:100},
+                    {field:"saleAmount",title:"总金额/元",align:"center",width:120},
+                    {field:"buyArrears",title:"欠款/元",align:"center",width:120},
                     {field:"salePrice",title:"售价/每斤",align:"center",width:120},
                     {field:"saleVariety",title:"售出品种",align:"center",width:115},
                     {field:"averageWeight",title:"平均毛重/斤",align:"center",width:120},
                     {field:"averageMoney",title:"平均每头金额/元",align:"center",width:160},
                     {field:"totalWeight",title:"总重量/斤",align:"center",width:115},
-                    {field:"saleAmount",title:"总金额/元",align:"center",width:120},
-                    {title:'操作',align:'center',width:120,toolbar:'#tools'}
                 ]]
             });
 

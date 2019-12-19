@@ -48,28 +48,43 @@
                 </div>
             </div>
         </div><br>
-
         <div class="layui-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">总价格</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="totalMoney" class="layui-input" autocomplete="off" placeholder="请输入总价格" required lay-verify="totalMoney|number" lay-verType="msg"/>
+                </div>
+            </div>
+        </div><br>
+        <div class="layui-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">欠款</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="buyArrears" class="layui-input" autocomplete="off" placeholder="请输入欠款" lay-verify="buyArrears|number" lay-verType="msg"/>
+                </div>
+            </div>
+        </div><br>
+        <%--<div class="layui-container">
             <div class="layui-form-item">
                 <label class="layui-form-label">购买价格</label>
                 <div class="layui-input-inline">
                     <input type="text" name="buyPrice" class="layui-input" autocomplete="off" placeholder="请输入购买价格" required lay-verify="buyPrice|number" lay-verType="msg"/>
                 </div>
             </div>
-        </div><br>
-        <div class="layui-container">
+        </div><br>--%>
+        <%--<div class="layui-container">
             <div class="layui-form-item">
                 <label class="layui-form-label">超重价格</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="beyondPrice" class="layui-input" autocomplete="off" placeholder="超出标准重量价格" required lay-verify="beyondPrice" lay-verType="msg"/>
+                    <input type="text" name="beyondPrice" class="layui-input" autocomplete="off" placeholder="超出标准重量价格"  lay-verify="beyondPrice" lay-verType="msg"/>
                 </div>
             </div>
-        </div><br>
+        </div><br>--%>
         <div class="layui-container">
             <div class="layui-form-item">
                 <label class="layui-form-label">平均重量</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="averageWeight" class="layui-input" autocomplete="off" placeholder="请输入平均重量" required lay-verify="averageWeight" lay-verType="msg"/>
+                    <input type="text" name="averageWeight" class="layui-input" autocomplete="off" placeholder="请输入平均重量"  lay-verify="averageWeight" lay-verType="msg"/>
                 </div>
             </div>
         </div><br>
@@ -77,23 +92,15 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">购买品种</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="buyVariety" class="layui-input" autocomplete="off" placeholder="请输入购买品种" required lay-verify="saleVariety" lay-verType="msg"/>
+                    <input type="text" name="buyVariety" class="layui-input" autocomplete="off" placeholder="请输入购买品种"  lay-verify="saleVariety" lay-verType="msg"/>
                 </div>
             </div>
         </div><br>
         <div class="layui-container">
             <div class="layui-form-item">
-                <label class="layui-form-label">购买地址</label>
+                <label class="layui-form-label">购买来源</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="buyAddress" class="layui-input" autocomplete="off" placeholder="请输入购买地址" required lay-verify="buyAddress" lay-verType="msg"/>
-                </div>
-            </div>
-        </div><br>
-        <div class="layui-container">
-            <div class="layui-form-item">
-                <label class="layui-form-label">总价格</label>
-                <div class="layui-input-inline">
-                    <input type="text" name="totalMoney" class="layui-input" autocomplete="off" placeholder="请输入总价格" required lay-verify="totalMoney|number" lay-verType="msg"/>
+                    <input type="text" name="buyAddress" class="layui-input" autocomplete="off" placeholder="请输入购买来源"  lay-verify="buyAddress" lay-verType="msg"/>
                 </div>
             </div>
         </div>
@@ -149,29 +156,29 @@
                 }
             },
             buyPrice:function(value,item){
-                if(value == ""){
+                /*if(value == ""){
                     return '请输入购买价格';
                 }
                 if(!new RegExp("^\\d*\\.?\\d*?$").test(value)){
                     return "购买价格只能为数字";
-                }
+                }*/
             },
             beyondPrice:function(value,item){
-                if(value == ""){
+                /*if(value == ""){
                     return "请输入超出标准重量的价格";
                 }
                 if(!new RegExp("^\\d*\\.?\\d*?$").test(value)){
                     return "超出价格只能为数字";
-                }
+                }*/
             },
             buyAddress:function(value,item){
                 if(value == ""){
-                    return "请输入购买地址";
+                    //return "请输入购买地址";
                 }
             },
             buyVariety:function(value,item){
                 if(value==""){
-                    return "请输入购买品种";
+                    //return "请输入购买品种";
                 }
             },
             totalMoney:function(value,item){

@@ -70,6 +70,9 @@ public class PigletController {
         int batchActive = ibs.getStatusActiveBatchNumber();
         buy.setBatchNumber(batchActive);
         System.out.println(buy.getBuyDate());
+        if (buy.getBuyQuantity() > 0) {
+            buy.setBuyPrice(buy.getTotalMoney() / buy.getBuyQuantity());
+        }
         int n = service.addBuyRecord(buy);
         if (n > 0) {
             return "OK";
@@ -94,14 +97,18 @@ public class PigletController {
 
     /**
      * 更新账单
+     *
      * @param buy
      * @return
      */
     @RequestMapping("/updatepiglet")
     @ResponseBody
-    public String updatePiglet(Buy buy){
+    public String updatePiglet(Buy buy) {
+        if (buy.getBuyQuantity() > 0) {
+            buy.setBuyPrice(buy.getTotalMoney() / buy.getBuyQuantity());
+        }
         int n = service.updateBuyRecord(buy);
-        if(n>0){
+        if (n > 0) {
             return "OK";
         }
         return "FAIL";
@@ -109,14 +116,15 @@ public class PigletController {
 
     /**
      * 删除账单
+     *
      * @param buyID
      * @return
      */
     @RequestMapping("/deletepiglet")
     @ResponseBody
-    public String deletePigletRecord(int buyID){
+    public String deletePigletRecord(int buyID) {
         int n = service.deleteBuyRecord(buyID);
-        if(n>0){
+        if (n > 0) {
             return "OK";
         }
         return "FAIL";

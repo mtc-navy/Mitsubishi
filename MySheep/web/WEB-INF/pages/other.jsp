@@ -77,13 +77,13 @@
             url:"allother",
             page:true,
             cols:[[
-                {field:"recordDate",title:"时间",align:"center",width:110,edit:"textarea"},
-                {field:"recordMoney",title:"开销",align:"center",width:90},
+                {title:"操作",align:"center",toolbar:"#tools",width:116},
+                {field:"recordDate",title:"时间",align:"center",width:90,edit:"textarea"},
+                {field:"recordMoney",title:"花费开销",align:"center",width:100},
                 {field:"recordDetails",title:"详细记录",align:"center",minWidth:200},
-                {title:"操作",align:"center",toolbar:"#tools",width:120}
             ]]
         });
-        
+
         table.on('tool(other)',function(obj){
             var data = obj.data;
             var layEvent = obj.event;
@@ -107,7 +107,7 @@
                 });
             }
         });
-        
+
     });
 
 </script>

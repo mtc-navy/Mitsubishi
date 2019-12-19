@@ -44,9 +44,9 @@
 
         <div class="layui-container">
             <div class="layui-form-item">
-                <label class="layui-form-label">售价</label>
+                <label class="layui-form-label">总价</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="salePrice" class="layui-input" autocomplete="off" placeholder="请输入售价" required lay-verify="salePrice|number" lay-verType="msg"/>
+                    <input type="text" name="saleAmount" class="layui-input" autocomplete="off" placeholder="请输入总价" required lay-verify="saleAmount|number" lay-verType="msg"/>
                 </div>
             </div>
         </div><br>
@@ -63,7 +63,15 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">总重量</label>
                 <div class="layui-input-inline">
-                    <input type="text" name=totalWeight class="layui-input" autocomplete="off" placeholder="请输入总重量" required lay-verify="totalWeight|number" lay-verType="msg"/>
+                    <input type="text" name=totalWeight class="layui-input" autocomplete="off" placeholder="请输入总重量" lay-verify="totalWeight|number" lay-verType="msg"/>
+                </div>
+            </div>
+        </div><br>
+        <div class="layui-container">
+            <div class="layui-form-item">
+                <label class="layui-form-label">销售欠款</label>
+                <div class="layui-input-inline">
+                    <input type="text" name=saleArrears class="layui-input" autocomplete="off" placeholder="请输入销售欠款" lay-verify="saleArrears|number" lay-verType="msg"/>
                 </div>
             </div>
         </div>
@@ -127,9 +135,9 @@
                 }
             },
             totalWeight:function(value,item){
-            	if(value == ""){
-            		return "总重量不能为空";
-            	}
+            	// if(value == ""){
+            	// 	return "总重量不能为空";
+            	// }
             }
         });
     });

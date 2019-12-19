@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 /**
- * 
  * @author y1ang
  * @Data 2018年10月15日-下午3:37:30
  * @Description 卖羊账单信息控制类
@@ -29,7 +28,7 @@ public class SaleController {
 
     /**
      * 跳转到账单界面
-     * 
+     *
      * @return
      */
     @RequestMapping("/sale.html")
@@ -39,7 +38,7 @@ public class SaleController {
 
     /**
      * 查询所有账单，展示
-     * 
+     *
      * @param page
      * @param limit
      * @return
@@ -66,16 +65,17 @@ public class SaleController {
 
     /**
      * 添加记录
-     * 
+     *
      * @param sale
      * @return
      */
     @RequestMapping("/addsale")
     @ResponseBody
     public String insertSale(Sale sale) {
-        // 总金额
-        double saleAmount = sale.getSalePrice() * sale.getTotalWeight();
-        sale.setSaleAmount(saleAmount);
+        // 单头价钱
+        if (sale.getSaleQuantity() > 0) {
+            sale.setSalePrice(sale.getSaleAmount() / sale.getSaleQuantity());
+        }
         // 平均金额
         double averageMoney = sale.getSaleAmount() / sale.getSaleQuantity();
         sale.setAverageMoney(averageMoney);
@@ -87,10 +87,6 @@ public class SaleController {
 
         sale.setBatchNumber(activeBatch);
 
-        System.out.println("总金额：" + saleAmount);
-        System.out.println("平均重量：" + averageWeight);
-        System.out.println("平均价格：" + averageMoney);
-
         int n = service.insertSaleRecord(sale);
         if (n > 0) {
             return "OK";
@@ -100,7 +96,7 @@ public class SaleController {
 
     /**
      * 通过id查询账单，跳转修改界面
-     * 
+     *
      * @param saleID
      * @param model
      * @return
@@ -114,16 +110,17 @@ public class SaleController {
 
     /**
      * 修改卖羊账单
-     * 
+     *
      * @param sale
      * @return
      */
     @RequestMapping("/updatesale")
     @ResponseBody
     public String updateSale(Sale sale) {
-        // 总金额
-        double saleAmount = sale.getSalePrice() * sale.getTotalWeight();
-        sale.setSaleAmount(saleAmount);
+        // 单头价钱
+        if (sale.getSaleQuantity() > 0) {
+            sale.setSalePrice(sale.getSaleAmount() / sale.getSaleQuantity());
+        }
         // 平均金额
         double averageMoney = sale.getSaleAmount() / sale.getSaleQuantity();
         sale.setAverageMoney(averageMoney);
@@ -140,7 +137,7 @@ public class SaleController {
 
     /**
      * 删除卖羊记录
-     * 
+     *
      * @param saleID
      * @return
      */

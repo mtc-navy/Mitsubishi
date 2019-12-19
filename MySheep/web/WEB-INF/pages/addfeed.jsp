@@ -43,9 +43,9 @@
                 </div><br />
                 <div class="layui-container">
                     <div class="layui-form-item">
-                        <label class="layui-form-label">饲料单价</label>
+                        <label class="layui-form-label">饲料总价</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="feedPrice" class="layui-input" autocomplete="off" placeholder="请输入单价" lay-verify="feedPrice" lay-verType="msg"/>
+                            <input type="text" name="feedTotal" class="layui-input" autocomplete="off" placeholder="请输入总价" lay-verify="feedTotal" lay-verType="msg"/>
                         </div>
                     </div>
                 </div><br />
@@ -55,9 +55,18 @@
                         <div class="layui-input-block">
                             <select name="feedPayState" lay-verify="required|feedPayState">
                                 <option value="">请选择支付状态</option>
-                                <option value="已支付">已支付</option>
-                                <option value="未支付">未支付</option>
+                                <option value="已付">已付</option>
+                                <option value="未付">未付</option>
+                                <option value="未清">未清</option>
                             </select>
+                        </div>
+                    </div>
+                </div><br />
+                <div class="layui-container">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">欠款</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="feedArrears" class="layui-input" autocomplete="off" placeholder="请输入欠款" lay-verify="feedArrears" lay-verType="msg"/>
                         </div>
                     </div>
                 </div>

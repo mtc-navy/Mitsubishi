@@ -60,13 +60,14 @@ public class CountController {
     @RequestMapping("/feedChart")
     @ResponseBody
     public Map feedChart() {
-        Map<String, Object> map = new HashMap(6);
+        Map<String, Object> map = new HashMap(7);
         map.put("feedPaid", service.getPaidFeedAmount(active));
         map.put("feedUnPaid", service.getUnPaidFeedAmount(active));
         map.put("feedTotal", service.getAllFeedAmount(active));
         map.put("moneyPaid", service.getPaidMoney(active));
         map.put("moneyUnPaid", service.getUnPaidMoney(active));
         map.put("moneyTotal", service.getFeedMoney(active));
+        map.put("moneyArrears", service.getFeedArrears(active));
         return map;
     }
 
@@ -78,9 +79,10 @@ public class CountController {
     @RequestMapping("/pigletChart")
     @ResponseBody
     public Map<String, Object> pigletChart() {
-        Map<String, Object> map = new HashMap<>(2);
+        Map<String, Object> map = new HashMap<>(3);
         map.put("pigletChart", service.getPigletMoney(active));
         map.put("pigletCount", service.getPigletCount(active));
+        map.put("pigletArrears", service.getPigletArrears(active));
         return map;
     }
 
@@ -95,6 +97,7 @@ public class CountController {
         Map<String, Object> map = new HashMap<>(2);
         map.put("saleChart", service.getSaleMoney(active));
         map.put("saleCount", service.getSaleCount(active));
+        map.put("saleArrears", service.getSaleArrears(active));
         return map;
     }
 

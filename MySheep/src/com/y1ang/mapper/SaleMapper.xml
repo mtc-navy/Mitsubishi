@@ -11,7 +11,8 @@
 		<result column="average_weight" jdbcType="DOUBLE" property="averageWeight"/>
 		<result column="sale_amount" jdbcType="DOUBLE" property="saleAmount"/>
 		<result column="average_money" jdbcType="DOUBLE" property="averageMoney"/>
-		<result column="batch_numer" jdbcType="INTEGER" property="batchNumer"/>
+        <result column="sale_arrears" jdbcType="DOUBLE" property="saleArrears"/>
+        <result column="batch_numer" jdbcType="INTEGER" property="batchNumer"/>
 	</resultMap>
 	
 	<!-- 查询所有卖羊账单 -->
@@ -25,7 +26,8 @@
             total_weight,
             average_weight,
             sale_amount,
-            average_money
+            average_money,
+            sale_arrears
         FROM
             t_sale s,
             t_batch b
@@ -51,7 +53,8 @@
             total_weight,
             average_weight,
             sale_amount,
-            average_money
+            average_money,
+            sale_arrears
         from t_sale
         where sale_id=#{saleID}
     </select>
@@ -68,7 +71,8 @@
             #{averageWeight},
             #{averageMoney},
             #{saleAmount},
-            #{batchNumber}
+            #{batchNumber},
+            #{saleArrears}
         )
     </insert>
     
@@ -84,7 +88,8 @@
             total_weight = #{totalWeight},
             average_weight = #{averageWeight},
             sale_amount = #{saleAmount},
-            average_money = #{averageMoney}
+            average_money = #{averageMoney},
+            sale_arrears = #{saleArrears}
         where sale_id = #{saleID}
     </update>
 	

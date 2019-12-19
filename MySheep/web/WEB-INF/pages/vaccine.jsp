@@ -81,11 +81,11 @@
                 groups:4
             },
             cols:[[
+                {title:"操作",align:"center",toolbar:"#tools",width:115},
                 {field:"vaccineName",title:"疫苗名称",align:"center",width:120},
-                {field:"vaccineDate",title:"接种日期",align:"center",width:120},
-                {field:"vaccineQuantity",title:"接种头数",align:"center"},
-                {field:"vaccineMoney",title:"接种开销",align:"center"},
-                {title:"操作",align:"center",toolbar:"#tools",width:120}
+                {field:"vaccineDate",title:"接种日期",align:"center",width:90},
+                {field:"vaccineQuantity",title:"接种头数",align:"center",width:100},
+                {field:"vaccineMoney",title:"接种开销",align:"center",width:100},
             ]]
         });
 
