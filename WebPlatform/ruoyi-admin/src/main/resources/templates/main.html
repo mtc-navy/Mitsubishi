@@ -909,7 +909,8 @@
                         var notice = "<div class=\"panel-heading\">"
                             + "<h5 class=\"panel-title\">"
                             + "<a data-toggle=\"collapse\" data-parent=\"#version\" href=\"#notice" + r.rows[info].noticeId + "\">"
-                            + (r.rows[info].noticeType == "2" ? "<span class=\"badge badge-warning\" style='background-color:#f8ac59!important;'>通知</span>" : "<span class=\"badge badge-success\" style='background-color:#1c84c6!important;'>公告</span>") + "&emsp;" +r.rows[info].noticeTitle
+                            + (r.rows[info].noticeType == "2" ? "<span class=\"badge badge-warning\" style='background-color:#f8ac59!important;'>" + r.rows[info].createTime + " 通知</span>"
+                                : "<span class=\"badge badge-success\" style='background-color:#1c84c6!important;'>" + r.rows[info].createTime +  " 公告</span>") + "&emsp;" +r.rows[info].noticeTitle
                             + "</a>"
                             + "</h5>"
                             + "</div>"
