@@ -1,8 +1,3 @@
-//jqGrid的配置信息
-$.jgrid.defaults.width = 1000;
-$.jgrid.defaults.responsive = true;
-$.jgrid.defaults.styleUI = 'Bootstrap';
-
 var baseURL = "../../";
 
 //工具集合Tools
@@ -68,9 +63,9 @@ function getSelectedRow() {
     	alert("只能选择一条记录");
     	return ;
     }
-    
     return selectedIDs[0];
 }
+
 function getListSelectedRow() {
     var grid = $("#jqGridList");
     var rowKey = grid.getGridParam("selrow");
@@ -84,9 +79,9 @@ function getListSelectedRow() {
         alert("只能选择一条记录");
         return ;
     }
-
     return selectedIDs[0];
 }
+
 //选择多条记录
 function getSelectedRows(id) {
     var grid = $("#jqGrid");
@@ -138,12 +133,7 @@ function autoComplete(id,result,callback){
 				return callback(obj);
 			}
 			return obj;
-		},
-		/*afterSelect:function(item){
-			if(typeof callback != 'undefined'){
-				callback(item);
-			}
-		}*/
+		}
 	});
 }
 
@@ -163,7 +153,6 @@ function getNowFormatDate() {
 	return currentdate;
 }
 
-
 function Add(a, b) {
     var c, d, e;
     try {
@@ -177,8 +166,8 @@ function Add(a, b) {
         d = 0;
     }
     return e = Math.pow(10, Math.max(c, d)), (Multiply(a, e) + Multiply(b, e)) / e;
-
 }
+
 //修改之后的减法
 function Minus(arg1, arg2) {
 	var r1, r2, m, n;
@@ -189,6 +178,7 @@ function Minus(arg1, arg2) {
 	n = (r1 >= r2) ? r1 : r2;
 	return ((arg1 * m - arg2 * m) / m).toFixed(n);
 }
+
 //修改之后的乘法
 function Multiply(arg1, arg2) {
 	var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
@@ -196,6 +186,7 @@ function Multiply(arg1, arg2) {
 	try { m += s2.split(".")[1].length } catch (e) { }
 	return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
 }
+
 //修改之后的除法
 function Division(arg1, arg2) {
 	var t1 = 0, t2 = 0, r1, r2;
@@ -207,6 +198,7 @@ function Division(arg1, arg2) {
 		return (r1 / r2) * pow(10, t2 - t1);
 	}
 }
+
 //格式化日期
 function GetYMD(date) {
     date=new Date(date);
@@ -226,12 +218,11 @@ function isNumber(val){
     }else{
         return false;
     }l
-
 }
+
 //取明细页面列表中可显示的最大行数
 function GetLimit() {
 	return 1000;
-	
 }
 
 function getTableHeight(){
